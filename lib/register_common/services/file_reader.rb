@@ -38,8 +38,8 @@ module RegisterCommon
       def read_from_stream(stream, file_format: DEFAULT_FORMAT, compression: DEFAULT_COMPRESSION)
         batch_records = []
 
-        with_deflated_stream(stream, compression: compression) do |deflated|
-          parser.foreach(stream, file_format: file_format) do |record|
+        decompressor.with_deflated_stream(stream, compression: compression) do |deflated|
+          parser.foreach(deflated, file_format: file_format) do |record|
             batch_records << record
             next unless (batch_records.length >= batch_size)
             yield batch_records
