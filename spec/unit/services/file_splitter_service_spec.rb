@@ -1,11 +1,11 @@
 require 'register_common/services/file_splitter_service'
-require 'register_common/utils/gzip_reader'
+require 'register_common/decompressors/gzip_reader'
 require 'stringio'
 
 RSpec.describe RegisterCommon::Services::FileSplitterService do
   subject { described_class.new }
 
-  let(:gzip_reader) { RegisterCommon::Utils::GzipReader.new }
+  let(:gzip_reader) { RegisterCommon::Decompressors::GzipReader.new }
 
   describe '#split_stream' do
     let(:content) { (1..1000).map { |i| "LINE#{i}" }.join("\n") + "\n" }

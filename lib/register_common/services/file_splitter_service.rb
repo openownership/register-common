@@ -1,13 +1,13 @@
 require 'stringio'
 require 'tmpdir'
-require 'register_common/utils/gzip_writer'
+require 'register_common/compressors/gzip_writer'
 
 module RegisterCommon
   module Services
     class FileSplitterService
       DEFAULT_LINES_PER_FILE = 2_500_000
 
-      def initialize(writer: Utils::GzipWriter.new)
+      def initialize(writer: Compressors::GzipWriter.new)
         @writer = writer
       end
 

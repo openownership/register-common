@@ -1,7 +1,7 @@
 require 'csv'
 
 module RegisterCommon
-  module Utils
+  module Parsers
     class CsvReader
       def foreach(stream, headers: true, &block)
         csv = CSV.new(stream, headers: headers)

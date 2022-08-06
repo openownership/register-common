@@ -1,11 +1,11 @@
 require 'tmpdir'
-require 'register_common/utils/gzip_reader'
-require 'register_common/utils/gzip_writer'
+require 'register_common/decompressors/gzip_reader'
+require 'register_common/compressors/gzip_writer'
 
-RSpec.describe RegisterCommon::Utils::GzipWriter do
+RSpec.describe RegisterCommon::Compressors::GzipWriter do
   subject { described_class.new }
 
-  let(:gzip_reader) { RegisterCommon::Utils::GzipReader.new }
+  let(:gzip_reader) { RegisterCommon::Decompressors::GzipReader.new }
 
   it 'writes a gzip to desired path successfully' do
     Dir.mktmpdir do |tmpdir|

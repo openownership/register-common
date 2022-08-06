@@ -31,4 +31,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'aws-sdk-s3', '~> 1.105.1'
+  spec.add_dependency 'rubyzip', '~> 2.3.2'
 end

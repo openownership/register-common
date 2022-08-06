@@ -1,7 +1,7 @@
 require 'zlib'
 
 module RegisterCommon
-  module Utils
+  module Decompressors
     class GzipReader
       def open_stream(stream)
         gz = Zlib::GzipReader.new(stream)

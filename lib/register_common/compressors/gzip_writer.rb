@@ -1,7 +1,7 @@
 require 'zlib'
 
 module RegisterCommon
-  module Utils
+  module Compressors
     class GzipWriter
       def open_file(local_path)
         Zlib::GzipWriter.open(local_path)

@@ -1,7 +1,7 @@
-require 'register_common/utils/json_reader'
+require 'register_common/parsers/json_reader'
 require 'stringio'
 
-RSpec.describe RegisterCommon::Utils::JsonReader do
+RSpec.describe RegisterCommon::Parsers::JsonReader do
   subject { described_class.new }
 
   let(:iostream) do
