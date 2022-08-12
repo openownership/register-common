@@ -18,16 +18,16 @@ RSpec.describe RegisterCommon::Decompressors::ZipReader do
       end
 
       it 'returns stream with correct data' do
-        stream = subject.open_stream zipstream
-        expect(stream.read).to eq content
+        result = subject.open_stream(zipstream) { |stream| stream.read }
+        expect(result).to eq content
       end
     end
 
     context 'when opening an existing zip file' do
       it 'reads file correctly' do
         File.open('spec/fixtures/example.zip') do |f|
-          stream = subject.open_stream f
-          expect(stream.read).to eq "{ \"hello\": \"world\" }\r\n{ \"hello2\": \"world2\" }\r\n"
+          content = subject.open_stream(f) { |stream| stream.read }
+          expect(content).to eq "{ \"hello\": \"world\" }\r\n{ \"hello2\": \"world2\" }\r\n"
         end
       end
     end

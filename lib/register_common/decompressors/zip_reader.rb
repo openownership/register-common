@@ -9,7 +9,9 @@ module RegisterCommon
         zip = Zip::File.open_buffer(stream)
         raise InvalidZipError if zip.count > 1
 
-        zip.first.get_input_stream
+        yield zip.first.get_input_stream
+      ensure
+        zip.close
       end
     end
   end

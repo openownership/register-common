@@ -6,8 +6,8 @@ module RegisterCommon
   module Decompressors
     class Decompressor
       def initialize(
-        gzip_reader: Utils::GzipReader.new,
-        zip_reader: Utils::ZipReader.new
+        gzip_reader: GzipReader.new,
+        zip_reader: ZipReader.new
       )
         @gzip_reader = gzip_reader
         @zip_reader = zip_reader
