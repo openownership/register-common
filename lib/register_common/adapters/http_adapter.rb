@@ -10,39 +10,39 @@ module RegisterCommon
       HttpResponse = Struct.new(:status, :headers, :body, :success)
 
       def get(url, params: {}, headers: {}, raise_on_failure: false)
-      streamed = nil
-      response =
-        if block_given?
-          streamed = []
-          current_chunk = ""
+        streamed = nil
+        response =
+          if block_given?
+            streamed = []
+            current_chunk = ""
 
-          Faraday.new.get(
-            URI(url), params, headers
-          ) do |req|
-            req.options.on_data = Proc.new do |chunk, overall_received_bytes|
-              current_chunk += chunk
-              lines = current_chunk.split("\n")
-              if current_chunk[-1] == "\n"
-                lines[0...-1].each do |line|
-                  next if line.empty?
-                  yield line
+            Faraday.new.get(
+              URI(url), params, headers
+            ) do |req|
+              req.options.on_data = Proc.new do |chunk, overall_received_bytes|
+                current_chunk += chunk
+                lines = current_chunk.split("\n")
+                if current_chunk[-1] == "\n"
+                  lines[0...-1].each do |line|
+                    next if line.empty?
+                    yield line
+                  end
+                  current_chunk = ""
+                elsif lines.length > 1
+                  lines[0...-1].each do |line|
+                    next if line.empty?
+                    yield line
+                  end
+                  current_chunk = lines[-1]
                 end
-                current_chunk = ""
-              elsif lines.length > 1
-                lines[0...-1].each do |line|
-                  next if line.empty?
-                  yield line
-                end
-                current_chunk = lines[-1]
+                streamed << chunk
               end
-              streamed << chunk
             end
+          else
+            Faraday.new.get(
+              URI(url), params, headers
+            )
           end
-        else
-          Faraday.new.get(
-            URI(url), params, headers
-          )
-        end
 
         raise HttpError if !response.success? && raise_on_failure
 
