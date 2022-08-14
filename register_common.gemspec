@@ -30,6 +30,9 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency 'activesupport'
+  spec.add_dependency 'aws-sdk-athena'
   spec.add_dependency 'aws-sdk-s3', '~> 1.105.1'
+  spec.add_dependency 'dotenv'
   spec.add_dependency 'rubyzip', '~> 2.3.2'
 end
