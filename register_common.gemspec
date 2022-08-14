@@ -32,7 +32,13 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport'
   spec.add_dependency 'aws-sdk-athena'
+  spec.add_dependency 'aws-sdk-firehose'
+  spec.add_dependency 'aws-sdk-kinesis'
   spec.add_dependency 'aws-sdk-s3', '~> 1.105.1'
   spec.add_dependency 'dotenv'
+  spec.add_dependency 'faraday'
+  spec.add_dependency 'faraday_middleware'
+  spec.add_dependency 'net-http-persistent', '~> 4.0.1'
+  spec.add_dependency 'nokogiri'
   spec.add_dependency 'rubyzip', '~> 2.3.2'
 end
