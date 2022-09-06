@@ -10,17 +10,19 @@ module RegisterCommon
       def initialize(
         stream_name:,
         kinesis_adapter:,
-        buffer_size:
+        buffer_size:,
+        serializer: nil
       )
         @stream_name = stream_name
         @kinesis_adapter = kinesis_adapter
         @buffer_size = buffer_size
+        @serializer = serializer
         @buffer = []
       end
 
       def publish(msg)
         unless msg.is_a? String
-          msg = msg.serialize
+          msg = serializer ? serializer.serialize(msg) : msg.serialize
         end
 
         if msg[-1] != "\n"
@@ -43,7 +45,7 @@ module RegisterCommon
       private
 
       attr_reader :buffer, :buffer_size
-      attr_reader :kinesis_adapter, :stream_name, :retrier
+      attr_reader :kinesis_adapter, :stream_name, :retrier, :serializer
 
       def flush_buffer
         return if buffer.empty?
