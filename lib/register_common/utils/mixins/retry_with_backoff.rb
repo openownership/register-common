@@ -1,4 +1,4 @@
-module RegisterImporter
+module RegisterCommon
   module Utils
     module Mixins
       module RetryWithBackoff
