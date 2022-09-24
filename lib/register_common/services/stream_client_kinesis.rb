@@ -4,6 +4,8 @@ require 'redis'
 module RegisterCommon
   module Services
     class StreamClientKinesis
+      EXPIRY_SECS = 60 * 60 * 24 # 1 day
+
       def initialize(credentials:, redis: nil, stream_name: nil)
         @redis = redis || Redis.new(host: ENV['REDIS_HOST'], port: ENV['REDIS_PORT'])
         @client = Aws::Kinesis::Client.new(
@@ -78,7 +80,7 @@ module RegisterCommon
 
       def store_sequence_number(shard_id, sequence_number)
         if sequence_number
-          redis.set(shard_id, sequence_number)
+          redis.set(shard_id, sequence_number, ex: EXPIRY_SECS)
         else
           redis.del(shard_id)
         end
