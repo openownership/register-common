@@ -40,5 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'faraday_middleware'
   spec.add_dependency 'net-http-persistent', '~> 4.0.1'
   spec.add_dependency 'nokogiri'
+  spec.add_dependency 'redis', '~> 5.0.5'
   spec.add_dependency 'rubyzip', '~> 2.3.2'
 end

@@ -6,46 +6,57 @@ module RegisterCommon
     class StreamClientKinesis
       EXPIRY_SECS = 60 * 60 * 24 # 1 day
 
-      def initialize(credentials:, redis: nil, stream_name: nil)
+      def initialize(credentials:, stream_name:, redis: nil, client: nil)
         @redis = redis || Redis.new(host: ENV['REDIS_HOST'], port: ENV['REDIS_PORT'])
-        @client = Aws::Kinesis::Client.new(
+        @client = client || Aws::Kinesis::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
           secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
         )
-        @stream_name = stream_name || 'psc-test-stream'
+        @stream_name = stream_name
       end
 
-      def consume
-        print "LISTING SHARDS\n"
+      def consume(consumer_id, limit: nil)
         shard_ids = list_shards
 
-        print "LISTING SEQUENCE NUMBERSFOR SHARDS #{shard_ids}\n"
-        sequence_numbers = shard_ids.map { |shard_id| [shard_id, get_sequence_number(shard_id)] }.to_h
+        sequence_numbers = shard_ids.map do |shard_id|
+          sequence_number = get_sequence_number(consumer_id, shard_id)
+          [shard_id, sequence_number]
+        end.to_h
 
-        print "LISTING ITERATORS FOR SEQUENCE NUMBERS #{sequence_numbers}\n"
         iterators = sequence_numbers.map do |shard_id, seq_number|
           [shard_id, get_shard_iterator(shard_id, sequence_number: seq_number)]
         end.to_h
 
-        print "STARTING WITH ITERATORS: #{iterators}\n"
-        while true
+        record_count = 0
+        complete = false
+        while !complete
           shard_ids = iterators.keys
           shard_ids.each do |shard_id|
             iterator = iterators[shard_id]
             resp = client.get_records({ shard_iterator: iterator, limit: 50 })
             next if resp.records.empty?
 
+            last_record = nil
             resp.records.each do |record|
               yield record.data
+
+              record_count += 1
+              last_record = record
+
+              if limit && (record_count >= limit)
+                complete = true
+                break
+              end
             end
 
             iterators[shard_id] = resp.next_shard_iterator
-            
-            store_sequence_number(shard_id, resp.records[-1].sequence_number)
+            store_sequence_number(consumer_id, shard_id, last_record.sequence_number)
+
+            break if complete
           end
 
-          print("SLEEPING\n")
+          break if complete
           sleep 1
         end
       end
@@ -56,11 +67,6 @@ module RegisterCommon
 
       def list_shards
         client.list_shards({ stream_name: stream_name }).shards.map(&:shard_id)
-      end
-
-      def get_sequence_number(shard_id)
-        print("GET SEQ NUMBER: ", shard_id, "\n")
-        redis.get shard_id
       end
 
       def get_shard_iterator(shard_id, sequence_number: nil)
@@ -78,12 +84,22 @@ module RegisterCommon
         client.get_records({ shard_iterator: shard_iterator, limit: 50 })
       end
 
-      def store_sequence_number(shard_id, sequence_number)
+      def get_sequence_number(consumer_id, shard_id)
+        key = redis_key(consumer_id, shard_id)
+        redis.get key
+      end
+
+      def store_sequence_number(consumer_id, shard_id, sequence_number)
+        key = redis_key(consumer_id, shard_id)
         if sequence_number
-          redis.set(shard_id, sequence_number, ex: EXPIRY_SECS)
+          redis.set(key, sequence_number, ex: EXPIRY_SECS)
         else
-          redis.del(shard_id)
+          redis.del(key)
         end
+      end
+
+      def redis_key(consumer_id, shard_id)
+        "kinesis_#{consumer_id}_#{shard_id}"
       end
     end
   end
