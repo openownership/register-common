@@ -35,6 +35,8 @@ module RegisterCommon
           shard_ids.each do |shard_id|
             iterator = iterators[shard_id]
             resp = client.get_records({ shard_iterator: iterator, limit: 50 })
+            iterators[shard_id] = resp.next_shard_iterator
+
             next if resp.records.empty?
 
             last_record = nil
