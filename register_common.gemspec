@@ -27,16 +27,16 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'activesupport'
+  spec.add_dependency 'activesupport', '>= 6', '< 8'
   spec.add_dependency 'aws-sdk-athena'
   spec.add_dependency 'aws-sdk-firehose'
   spec.add_dependency 'aws-sdk-kinesis'
-  spec.add_dependency 'aws-sdk-s3', '~> 1.105.1'
+  spec.add_dependency 'aws-sdk-s3'
   spec.add_dependency 'dotenv'
-  spec.add_dependency 'faraday'
-  spec.add_dependency 'faraday_middleware'
-  spec.add_dependency 'net-http-persistent', '~> 4.0.1'
+  spec.add_dependency 'faraday', '>= 1', '< 2'
+  spec.add_dependency 'faraday_middleware', '>= 1', '< 2'
+  spec.add_dependency 'net-http-persistent'
   spec.add_dependency 'nokogiri'
-  spec.add_dependency 'redis', '~> 5.0.5'
-  spec.add_dependency 'rubyzip', '~> 2.3.2'
+  spec.add_dependency 'redis', '>= 3'
+  spec.add_dependency 'rubyzip', '>= 2', '< 3'
 end

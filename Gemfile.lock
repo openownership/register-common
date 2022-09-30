@@ -2,18 +2,18 @@ PATH
   remote: .
   specs:
     register_common (0.1.0)
-      activesupport
+      activesupport (>= 6, < 8)
       aws-sdk-athena
       aws-sdk-firehose
       aws-sdk-kinesis
-      aws-sdk-s3 (~> 1.105.1)
+      aws-sdk-s3
       dotenv
-      faraday
-      faraday_middleware
-      net-http-persistent (~> 4.0.1)
+      faraday (>= 1, < 2)
+      faraday_middleware (>= 1, < 2)
+      net-http-persistent
       nokogiri
-      redis (~> 5.0.5)
-      rubyzip (~> 2.3.2)
+      redis (>= 3)
+      rubyzip (>= 2, < 3)
 
 GEM
   remote: https://rubygems.org/
