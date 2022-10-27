@@ -39,4 +39,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'nokogiri'
   spec.add_dependency 'redis', '>= 3'
   spec.add_dependency 'rubyzip', '>= 2', '< 3'
+  spec.add_dependency 'xxhash'
 end

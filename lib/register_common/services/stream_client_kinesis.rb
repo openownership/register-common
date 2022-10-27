@@ -1,13 +1,15 @@
 require 'aws-sdk-kinesis'
 require 'redis'
+require_relative 'msg_handler'
 
 module RegisterCommon
   module Services
     class StreamClientKinesis
       EXPIRY_SECS = 60 * 60 * 24 # 1 day
 
-      def initialize(credentials:, stream_name:, redis: nil, client: nil)
+      def initialize(credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil, client: nil)
         @redis = redis || Redis.new(host: ENV['REDIS_HOST'], port: ENV['REDIS_PORT'])
+        @msg_handler = msg_handler || MsgHandler.new(s3_adapter: s3_adapter, s3_bucket: s3_bucket)
         @client = client || Aws::Kinesis::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
@@ -41,7 +43,7 @@ module RegisterCommon
 
             last_record = nil
             resp.records.each do |record|
-              yield record.data
+              yield msg_handler.process(record.data)
 
               record_count += 1
               last_record = record
@@ -65,7 +67,7 @@ module RegisterCommon
 
       private
 
-      attr_reader :redis, :client, :stream_name
+      attr_reader :redis, :client, :stream_name, :msg_handler
 
       def list_shards
         client.list_shards({ stream_name: stream_name }).shards.map(&:shard_id)

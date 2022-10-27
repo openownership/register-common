@@ -1,4 +1,5 @@
 require 'aws-sdk-s3'
+require 'tmpdir'
 
 module RegisterCommon
   module Adapters
@@ -20,6 +21,24 @@ module RegisterCommon
         s3.download_file(local_path)
       rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
         raise Errors::NoSuchKey
+      end
+
+      def download_and_read(s3_bucket:, s3_path:)
+        Dir.mktmpdir do |dir|
+          local_path = File.join(dir, 'tmpfile')
+          download_from_s3(s3_bucket: s3_bucket, s3_path: s3_path, local_path: local_path)
+          File.read(local_path)
+        end
+      end
+
+      def exists?(s3_bucket:, s3_path:)
+        Dir.mktmpdir do |dir| # TODO: avoid downloading
+          local_path = File.join(dir, 'tmpfile')
+          download_from_s3(s3_bucket: s3_bucket, s3_path: s3_path, local_path: local_path)
+          true
+        rescue Errors::NoSuchKey
+          false
+        end
       end
 
       def upload_to_s3(s3_bucket:, s3_path:, local_path:)

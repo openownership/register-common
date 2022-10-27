@@ -14,6 +14,7 @@ PATH
       nokogiri
       redis (>= 3)
       rubyzip (>= 2, < 3)
+      xxhash
 
 GEM
   remote: https://rubygems.org/
@@ -119,6 +120,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    xxhash (0.5.0)
 
 PLATFORMS
   x86_64-linux
