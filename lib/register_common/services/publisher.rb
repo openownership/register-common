@@ -20,12 +20,14 @@ module RegisterCommon
         buffer_size:,
         s3_adapter: nil,
         s3_prefix: nil,
+        s3_bucket: nil,
         serializer: nil
       )
         @stream_name = stream_name
         @kinesis_adapter = kinesis_adapter
         @s3_adapter = s3_adapter
         @s3_prefix = s3_prefix
+        @s3_bucket = s3_bucket
         @buffer_size = buffer_size
         @serializer = serializer
         @buffer = []
@@ -85,10 +87,10 @@ module RegisterCommon
 
         s3_path = File.join(s3_prefix, msg_hash)
 
-        return if s3_adapter.exists?(s3_bucket: s3_bucket, s3_path: s3_path)
-
-        stream = StringIO.new(msg)
-        s3_adapter.upload_from_file_obj_to_s3(s3_bucket: s3_bucket, s3_path: s3_path, stream: stream)
+        unless s3_adapter.exists?(s3_bucket: s3_bucket, s3_path: s3_path)
+          stream = StringIO.new(msg)
+          s3_adapter.upload_from_file_obj_to_s3(s3_bucket: s3_bucket, s3_path: s3_path, stream: stream)
+        end
 
         retry_with_backoff do
           kinesis_adapter.put_records(
