@@ -60,7 +60,7 @@ RSpec.describe RegisterCommon::Services::Publisher do
         expect(s3_adapter).to have_received(:upload_from_file_obj_to_s3)
         expect(kinesis_adapter).to have_received(:put_records).with(
           {
-            records: ["{\"s3_path\":\"/some/s3/prefix/2439106918277298582\"}"],
+            records: ["{\"s3_path\":\"/some/s3/prefix/2439106918277298582\"}\n"],
             stream_name:  stream_name
           }
         )
