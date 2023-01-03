@@ -6,7 +6,7 @@ module RegisterCommon
       DEFAULT_IDEMPOTENCY_TOKEN = 'idemp'
 
       def initialize(credentials:)
-        @client = Aws::SQS::Clien.new(
+        @client = Aws::SQS::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
           secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
