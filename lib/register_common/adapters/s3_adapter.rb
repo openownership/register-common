@@ -59,6 +59,40 @@ module RegisterCommon
         }).contents.map(&:key)
       end
 
+      def create_multipart_upload(s3_bucket:, s3_path:)
+        s3_client.create_multipart_upload({
+          bucket: s3_bucket,
+          key: s3_path 
+        }).upload_id
+      end
+
+      def add_multipart_part(s3_bucket:, source_path:, dest_path:, part_number:, upload_id:)
+        s3_client.upload_part_copy({
+          bucket: s3_bucket, 
+          copy_source: "/#{s3_bucket}/#{source_path}", 
+          key: dest_path,
+          part_number: part_number,
+          upload_id: upload_id
+        })
+      end
+
+      def complete_multipart_upload(s3_bucket:, s3_path:, upload_id:, parts:)
+        s3_client.complete_multipart_upload({
+          bucket: s3_bucket,
+          key: s3_path,
+          upload_id: upload_id,
+          multipart_upload: {
+            parts: parts
+          }
+        })
+      end
+
+      def download_from_s3_to_memory(s3_bucket:, s3_path:)
+        s3_client.get_object(bucket: s3_bucket, key: s3_path).body
+      rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
+        raise Errors::NoSuchKey
+      end
+
       private
 
       attr_reader :s3_client
