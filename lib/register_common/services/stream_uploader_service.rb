@@ -23,7 +23,7 @@ module RegisterCommon
         file_splitter_service.split_stream(
           stream,
           split_size:,
-          max_lines:
+          max_lines:,
         ) do |split_file_path|
           part = part_for_file_index file_index
           s3_path = File.join(s3_prefix, "part=part#{part}", "file-#{file_index}.csv.gz")

@@ -6,7 +6,7 @@ RSpec.describe RegisterCommon::Decompressors::Decompressor do
   subject do
     described_class.new(
       gzip_reader:,
-      zip_reader:
+      zip_reader:,
     )
   end
 

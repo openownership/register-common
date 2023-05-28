@@ -35,7 +35,7 @@ module RegisterCommon
 
             # Since line count target exceeded close file and yield to user
             result = writer.close_stream(current_file)
-            File.open(file_path, 'wb') { |f| f.write result }
+            File.binwrite(file_path, result)
             yield file_path
 
             # Remove file once processed
@@ -51,7 +51,7 @@ module RegisterCommon
           end
 
           result = writer.close_stream(current_file)
-          File.open(file_path, 'wb') { |f| f.write result }
+          File.binwrite(file_path, result)
           if current_row_count.positive?
             yield file_path
             file_index += 1

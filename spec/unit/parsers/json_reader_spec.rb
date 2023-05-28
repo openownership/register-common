@@ -7,7 +7,7 @@ RSpec.describe RegisterCommon::Parsers::JsonReader do
   subject { described_class.new }
 
   let(:iostream) do
-    StringIO.new(<<~JSON
+    StringIO.new(<<~JSON,
       {"hello": "world"}
       {"more": "content"}
     JSON

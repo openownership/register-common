@@ -21,7 +21,7 @@ RSpec.describe RegisterCommon::Services::FileSplitterService do
           gzip_reader.open_stream(stream, &:read)
         end
 
-        starting_line = file_count * 100 + 1
+        starting_line = (file_count * 100) + 1
         expect(result).to eq (starting_line...(starting_line + 100)).map { |i| "LINE#{i}" }.join("\n") + "\n"
 
         file_count += 1

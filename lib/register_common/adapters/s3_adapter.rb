@@ -14,7 +14,7 @@ module RegisterCommon
         @s3_client = Aws::S3::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
-          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
+          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY,
         )
       end
 
@@ -55,38 +55,46 @@ module RegisterCommon
       end
 
       def list_objects(s3_bucket:, s3_prefix:)
-        s3_client.list_objects({
-                                 bucket: s3_bucket,
-                                 prefix: s3_prefix
-                               }).contents.map(&:key)
+        s3_client.list_objects(
+          {
+            bucket: s3_bucket,
+            prefix: s3_prefix,
+          },
+        ).contents.map(&:key)
       end
 
       def create_multipart_upload(s3_bucket:, s3_path:)
-        s3_client.create_multipart_upload({
-                                            bucket: s3_bucket,
-                                            key: s3_path
-                                          }).upload_id
+        s3_client.create_multipart_upload(
+          {
+            bucket: s3_bucket,
+            key: s3_path,
+          },
+        ).upload_id
       end
 
       def add_multipart_part(s3_bucket:, source_path:, dest_path:, part_number:, upload_id:)
-        s3_client.upload_part_copy({
-                                     bucket: s3_bucket,
-                                     copy_source: "/#{s3_bucket}/#{source_path}",
-                                     key: dest_path,
-                                     part_number:,
-                                     upload_id:
-                                   })
+        s3_client.upload_part_copy(
+          {
+            bucket: s3_bucket,
+            copy_source: "/#{s3_bucket}/#{source_path}",
+            key: dest_path,
+            part_number:,
+            upload_id:,
+          },
+        )
       end
 
       def complete_multipart_upload(s3_bucket:, s3_path:, upload_id:, parts:)
-        s3_client.complete_multipart_upload({
-                                              bucket: s3_bucket,
-                                              key: s3_path,
-                                              upload_id:,
-                                              multipart_upload: {
-                                                parts:
-                                              }
-                                            })
+        s3_client.complete_multipart_upload(
+          {
+            bucket: s3_bucket,
+            key: s3_path,
+            upload_id:,
+            multipart_upload: {
+              parts:,
+            },
+          },
+        )
       end
 
       def download_from_s3_to_memory(s3_bucket:, s3_path:)

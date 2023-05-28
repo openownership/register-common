@@ -94,8 +94,8 @@ module RegisterCommon
           kinesis_adapter.put_records(
             stream_name:,
             records: [
-              "#{{ s3_path: }.to_json}\n"
-            ]
+              "#{{ s3_path: }.to_json}\n",
+            ],
           )
         end
       end

@@ -40,4 +40,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'redis', '>= 3'
   spec.add_dependency 'rubyzip', '>= 2', '< 3'
   spec.add_dependency 'xxhash'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

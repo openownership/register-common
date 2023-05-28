@@ -13,7 +13,7 @@ RSpec.describe RegisterCommon::Services::Publisher do
       s3_adapter:,
       s3_bucket:,
       s3_prefix:,
-      serializer:
+      serializer:,
     )
   end
 
@@ -54,7 +54,7 @@ RSpec.describe RegisterCommon::Services::Publisher do
         allow(kinesis_adapter).to receive(:put_records)
         expect(s3_adapter).to receive(:exists?).with(
           s3_bucket:,
-          s3_path: '/some/s3/prefix/2439106918277298582'
+          s3_path: '/some/s3/prefix/2439106918277298582',
         ).and_return false
 
         subject.publish msg
@@ -63,8 +63,8 @@ RSpec.describe RegisterCommon::Services::Publisher do
         expect(kinesis_adapter).to have_received(:put_records).with(
           {
             records: ["{\"s3_path\":\"/some/s3/prefix/2439106918277298582\"}\n"],
-            stream_name:
-          }
+            stream_name:,
+          },
         )
       end
     end
@@ -91,7 +91,7 @@ RSpec.describe RegisterCommon::Services::Publisher do
 
         expect(kinesis_adapter).to have_received(:put_records).with(
           records: ["msg\n"],
-          stream_name:
+          stream_name:,
         )
       end
     end
