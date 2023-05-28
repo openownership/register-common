@@ -1,6 +1,9 @@
 inherit_from:
+  - .rubocop_todo.yml
   - .rubocop-disable-default-enabled.yml
   - .rubocop-enable-default-disabled.yml
+
+
 
 require: rubocop-rspec
 
