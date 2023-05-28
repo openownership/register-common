@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stringio'
 require 'json'
 require 'xxhash'
@@ -38,14 +40,10 @@ module RegisterCommon
           msg = serializer ? serializer.serialize(msg) : msg.serialize
         end
 
-        if msg[-1] != "\n"
-          msg += "\n"
-        end
+        msg += "\n" if msg[-1] != "\n"
 
         # Handle case where buffer would be too large
-        if (buffer.sum(&:length) + msg.length) >= MAX_BUFFER_BYTES
-          flush_buffer
-        end
+        flush_buffer if (buffer.sum(&:length) + msg.length) >= MAX_BUFFER_BYTES
 
         # Handle case where single message is too large
         if msg.length >= MAX_BUFFER_BYTES
@@ -69,14 +67,14 @@ module RegisterCommon
 
       private
 
-      attr_reader :buffer, :buffer_size, :stream_name, :retrier, :serializer
-      attr_reader :kinesis_adapter, :s3_adapter, :s3_bucket, :s3_prefix
+      attr_reader :buffer, :buffer_size, :stream_name, :retrier, :serializer, :kinesis_adapter, :s3_adapter,
+                  :s3_bucket, :s3_prefix
 
       def flush_buffer
         return if buffer.empty?
 
         retry_with_backoff do
-          kinesis_adapter.put_records(stream_name: stream_name, records: buffer)
+          kinesis_adapter.put_records(stream_name:, records: buffer)
         end
 
         @buffer = []
@@ -87,16 +85,16 @@ module RegisterCommon
 
         s3_path = File.join(s3_prefix, msg_hash)
 
-        unless s3_adapter.exists?(s3_bucket: s3_bucket, s3_path: s3_path)
+        unless s3_adapter.exists?(s3_bucket:, s3_path:)
           stream = StringIO.new(msg)
-          s3_adapter.upload_from_file_obj_to_s3(s3_bucket: s3_bucket, s3_path: s3_path, stream: stream)
+          s3_adapter.upload_from_file_obj_to_s3(s3_bucket:, s3_path:, stream:)
         end
 
         retry_with_backoff do
           kinesis_adapter.put_records(
-            stream_name: stream_name,
+            stream_name:,
             records: [
-              ({ s3_path: s3_path }.to_json + "\n")
+              "#{{ s3_path: }.to_json}\n"
             ]
           )
         end

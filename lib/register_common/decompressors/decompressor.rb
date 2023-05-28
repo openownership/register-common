@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/decompressors/compression_types'
 require 'register_common/decompressors/gzip_reader'
 require 'register_common/decompressors/zip_reader'

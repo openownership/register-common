@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require 'register_common/adapters/athena_adapter'
 
 RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
-  subject { described_class.new(credentials: credentials) }
+  subject { described_class.new(credentials:) }
 
   let(:credentials) do
     double('credentials',
-      AWS_REGION: 'AWS_REGION',
-      AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
-      AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY')
+           AWS_REGION: 'AWS_REGION',
+           AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
+           AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY')
   end
-  let(:athena_client) { double 'athena_client'}
+  let(:athena_client) { double 'athena_client' }
 
   before do
     expect(Aws::Athena::Client).to receive(:new).with(
@@ -54,13 +56,13 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
     let(:wait_interval) { 0.01 }
 
     let(:response) do
-      subject.wait_for_query(execution_id, max_time: max_time, wait_interval: wait_interval)
+      subject.wait_for_query(execution_id, max_time:, wait_interval:)
     end
 
     let(:responses) do
       states.map do |state|
         double 'expected_response',
-          query_execution: double('query_execution', status: double('state', state: state))
+               query_execution: double('query_execution', status: double('state', state:))
       end
     end
 
@@ -78,15 +80,15 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
 
     context 'when query has already failed' do
       let(:states) { ['FAILED'] }
-  
+
       it 'returns' do
         expect { response }.to raise_error described_class::QueryTimeout
       end
     end
 
     context 'when query eventually completes' do
-      let(:states) { ['PENDING', 'PENDING', 'SUCCEEDED'] }
-  
+      let(:states) { %w[PENDING PENDING SUCCEEDED] }
+
       it 'returns' do
         expect(response).to eq responses.last
       end

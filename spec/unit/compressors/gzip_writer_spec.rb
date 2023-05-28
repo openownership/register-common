@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'tmpdir'
 require 'register_common/decompressors/gzip_reader'
 require 'register_common/compressors/gzip_writer'
@@ -22,7 +24,7 @@ RSpec.describe RegisterCommon::Compressors::GzipWriter do
 
       # Unzip using our gzip reader
       result = File.open(file_path) do |stream|
-        gzip_reader.open_stream(stream) { |unzipped| unzipped.read }
+        gzip_reader.open_stream(stream, &:read)
       end
 
       # Check the unzipped content matches our original content

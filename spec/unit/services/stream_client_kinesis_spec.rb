@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'register_common/services/stream_client_kinesis'
 
 RSpec.describe RegisterCommon::Services::StreamClientKinesis do
   subject do
-    described_class.new(credentials: credentials, stream_name: stream_name, redis: redis, client: client)
+    described_class.new(credentials:, stream_name:, redis:, client:)
   end
 
   let(:redis) { double 'redis' }
@@ -13,7 +15,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
                           AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
                           AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY'
   end
-  
+
   describe '#consume' do
     let(:consumer_id) { 'consumer_id' }
 
@@ -22,29 +24,29 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         shard_ids = ['shard1']
         shard_iterator = 'iterator1'
         next_shard_iterator = 'next-iterator1'
-        shards = double 'shards', shards: shard_ids.map { |shard_id| double 'shard_id', shard_id: shard_id }
+        shards = double 'shards', shards: shard_ids.map { |shard_id| double('shard_id', shard_id:) }
         records = [double('record', data: 'data1', sequence_number: 'seq1')]
 
-        expect(redis).to receive(:get).with("kinesis_consumer_id_shard1").and_return nil
+        expect(redis).to receive(:get).with('kinesis_consumer_id_shard1').and_return nil
         allow(redis).to receive(:set)
 
         expect(client).to receive(:list_shards).with(
-          { stream_name: stream_name }
+          { stream_name: }
         ).and_return shards
-       
+
         expect(client).to receive(:get_shard_iterator).with(
           {
-            shard_id: "shard1",
-            shard_iterator_type: "TRIM_HORIZON",
+            shard_id: 'shard1',
+            shard_iterator_type: 'TRIM_HORIZON',
             starting_sequence_number: nil,
-            stream_name: stream_name
+            stream_name:
           }
-        ).and_return double('shard_iterator', shard_iterator: shard_iterator)
+        ).and_return double('shard_iterator', shard_iterator:)
 
         expect(client).to receive(:get_records).with(
-          { limit: 50, shard_iterator: "iterator1" }
+          { limit: 50, shard_iterator: 'iterator1' }
         ).and_return(
-          double 'resp', records: records, next_shard_iterator: next_shard_iterator
+          double('resp', records:, next_shard_iterator:)
         )
 
         records = []
@@ -52,7 +54,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(records).to eq ['data1']
         expect(redis).to have_received(:set).with(
-          "kinesis_consumer_id_shard1", 'seq1', ex: 60 * 60 * 24
+          'kinesis_consumer_id_shard1', 'seq1', ex: 60 * 60 * 24
         )
       end
     end
@@ -62,29 +64,29 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         shard_ids = ['shard1']
         shard_iterator = 'iterator1'
         next_shard_iterator = 'next-iterator1'
-        shards = double 'shards', shards: shard_ids.map { |shard_id| double 'shard_id', shard_id: shard_id }
+        shards = double 'shards', shards: shard_ids.map { |shard_id| double('shard_id', shard_id:) }
         records = [double('record', data: 'data1', sequence_number: 'seq1')]
 
-        expect(redis).to receive(:get).with("kinesis_consumer_id_shard1").and_return 'stored-seq'
+        expect(redis).to receive(:get).with('kinesis_consumer_id_shard1').and_return 'stored-seq'
         allow(redis).to receive(:set)
 
         expect(client).to receive(:list_shards).with(
-          { stream_name: stream_name }
+          { stream_name: }
         ).and_return shards
-       
+
         expect(client).to receive(:get_shard_iterator).with(
           {
-            shard_id: "shard1",
-            shard_iterator_type: "AFTER_SEQUENCE_NUMBER",
+            shard_id: 'shard1',
+            shard_iterator_type: 'AFTER_SEQUENCE_NUMBER',
             starting_sequence_number: 'stored-seq',
-            stream_name: stream_name
+            stream_name:
           }
-        ).and_return double('shard_iterator', shard_iterator: shard_iterator)
+        ).and_return double('shard_iterator', shard_iterator:)
 
         expect(client).to receive(:get_records).with(
-          { limit: 50, shard_iterator: "iterator1" }
+          { limit: 50, shard_iterator: 'iterator1' }
         ).and_return(
-          double 'resp', records: records, next_shard_iterator: next_shard_iterator
+          double('resp', records:, next_shard_iterator:)
         )
 
         records = []
@@ -92,7 +94,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(records).to eq ['data1']
         expect(redis).to have_received(:set).with(
-          "kinesis_consumer_id_shard1", 'seq1', ex: 60 * 60 * 24
+          'kinesis_consumer_id_shard1', 'seq1', ex: 60 * 60 * 24
         )
       end
     end

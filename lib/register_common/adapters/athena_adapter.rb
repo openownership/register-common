@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-athena'
 
 module RegisterCommon
@@ -15,8 +17,8 @@ module RegisterCommon
 
       def get_query_execution(execution_id)
         client.get_query_execution({
-          query_execution_id: execution_id
-        })
+                                     query_execution_id: execution_id
+                                   })
       end
 
       def start_query_execution(params)
@@ -26,9 +28,8 @@ module RegisterCommon
       def wait_for_query(execution_id, max_time: 100, wait_interval: 5)
         max_time.times do
           query = get_query_execution(execution_id)
-          if query.query_execution.status.state == 'SUCCEEDED'
-            return query
-          end
+          return query if query.query_execution.status.state == 'SUCCEEDED'
+
           sleep wait_interval
         end
 
@@ -36,12 +37,12 @@ module RegisterCommon
       end
 
       def execute_and_wait(sql_query, output_location)
-        athena_query =start_query_execution({
-          query_string: sql_query,
-          result_configuration: {
-            output_location: output_location
-          }
-        })
+        athena_query = start_query_execution({
+                                               query_string: sql_query,
+                                               result_configuration: {
+                                                 output_location:
+                                               }
+                                             })
         wait_for_query(athena_query.query_execution_id)
       end
 

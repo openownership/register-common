@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-kinesis'
 require 'redis'
 require_relative 'msg_handler'
@@ -7,9 +9,10 @@ module RegisterCommon
     class StreamClientKinesis
       EXPIRY_SECS = 60 * 60 * 24 # 1 day
 
-      def initialize(credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil, client: nil)
+      def initialize(credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil,
+                     client: nil)
         @redis = redis || Redis.new(host: ENV['REDIS_HOST'], port: ENV['REDIS_PORT'])
-        @msg_handler = msg_handler || MsgHandler.new(s3_adapter: s3_adapter, s3_bucket: s3_bucket)
+        @msg_handler = msg_handler || MsgHandler.new(s3_adapter:, s3_bucket:)
         @client = client || Aws::Kinesis::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
@@ -32,7 +35,7 @@ module RegisterCommon
 
         record_count = 0
         complete = false
-        while !complete
+        until complete
           shard_ids = iterators.keys
           shard_ids.each do |shard_id|
             iterator = iterators[shard_id]
@@ -61,6 +64,7 @@ module RegisterCommon
           end
 
           break if complete
+
           sleep 1
         end
       end
@@ -70,22 +74,22 @@ module RegisterCommon
       attr_reader :redis, :client, :stream_name, :msg_handler
 
       def list_shards
-        client.list_shards({ stream_name: stream_name }).shards.map(&:shard_id)
+        client.list_shards({ stream_name: }).shards.map(&:shard_id)
       end
 
       def get_shard_iterator(shard_id, sequence_number: nil)
-        shard_iterator_type = sequence_number ? "AFTER_SEQUENCE_NUMBER" : "TRIM_HORIZON"
+        shard_iterator_type = sequence_number ? 'AFTER_SEQUENCE_NUMBER' : 'TRIM_HORIZON'
 
         client.get_shard_iterator({
-          stream_name: stream_name,
-          shard_id: shard_id,
-          shard_iterator_type: shard_iterator_type,
-          starting_sequence_number: sequence_number
-        }).shard_iterator
+                                    stream_name:,
+                                    shard_id:,
+                                    shard_iterator_type:,
+                                    starting_sequence_number: sequence_number
+                                  }).shard_iterator
       end
 
       def get_records(shard_iterator)
-        client.get_records({ shard_iterator: shard_iterator, limit: 50 })
+        client.get_records({ shard_iterator:, limit: 50 })
       end
 
       def get_sequence_number(consumer_id, shard_id)

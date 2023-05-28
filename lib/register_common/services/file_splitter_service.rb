@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stringio'
 require 'tmpdir'
 require 'register_common/compressors/gzip_writer'
@@ -50,7 +52,7 @@ module RegisterCommon
 
           result = writer.close_stream(current_file)
           File.open(file_path, 'wb') { |f| f.write result }
-          if current_row_count > 0
+          if current_row_count.positive?
             yield file_path
             file_index += 1
           end

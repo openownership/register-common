@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'aws-sdk-kinesis'
 require 'json'
 require 'digest'
@@ -24,19 +26,19 @@ module RegisterCommon
 
         mapped_records = records.map do |record|
           {
-            data:          record, #.to_json, # TODO: should this be mapped to JSON here?
+            data: record, # .to_json, # TODO: should this be mapped to JSON here?
             partition_key: default_partition_key
           }
         end
 
         resp = client.put_records({
-          records:     mapped_records,
-          stream_name: stream_name
-        })
+                                    records: mapped_records,
+                                    stream_name:
+                                  })
 
-        if resp.failed_record_count > 0
-          raise PutRecordsError, resp
-        end
+        return unless resp.failed_record_count.positive?
+
+        raise PutRecordsError, resp
       end
 
       private

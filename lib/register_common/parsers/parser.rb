@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/parsers/file_formats'
 
 require 'register_common/parsers/csv_reader'

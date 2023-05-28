@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'register_common/decompressors/decompressor'
 
 RSpec.describe RegisterCommon::Decompressors::Decompressor do
   subject do
     described_class.new(
-      gzip_reader: gzip_reader,
-      zip_reader: zip_reader
+      gzip_reader:,
+      zip_reader:
     )
   end
 
@@ -26,7 +28,7 @@ RSpec.describe RegisterCommon::Decompressors::Decompressor do
       let(:deflated_stream) { stream }
 
       it 'yields unmodified stream' do
-        subject.with_deflated_stream(stream, compression: compression) { |s| func.call s }
+        subject.with_deflated_stream(stream, compression:) { |s| func.call s }
         expect(func).to have_received(:call).with(deflated_stream)
       end
     end
@@ -37,7 +39,7 @@ RSpec.describe RegisterCommon::Decompressors::Decompressor do
       it 'yields decompressed zip stream' do
         expect(zip_reader).to receive(:open_stream).with(stream).and_yield(deflated_stream)
 
-        subject.with_deflated_stream(stream, compression: compression) { |s| func.call s }
+        subject.with_deflated_stream(stream, compression:) { |s| func.call s }
         expect(func).to have_received(:call).with(deflated_stream)
       end
     end
@@ -48,7 +50,7 @@ RSpec.describe RegisterCommon::Decompressors::Decompressor do
       it 'yields decompressed gzip stream' do
         expect(gzip_reader).to receive(:open_stream).with(stream).and_yield(deflated_stream)
 
-        subject.with_deflated_stream(stream, compression: compression) { |s| func.call s }
+        subject.with_deflated_stream(stream, compression:) { |s| func.call s }
         expect(func).to have_received(:call).with(deflated_stream)
       end
     end
@@ -58,7 +60,7 @@ RSpec.describe RegisterCommon::Decompressors::Decompressor do
 
       it 'raises UnknownCompressionTypeError' do
         expect do
-          subject.with_deflated_stream(stream, compression: compression) { |s| func.call s }
+          subject.with_deflated_stream(stream, compression:) { |s| func.call s }
         end.to raise_error RegisterCommon::Decompressors::UnknownCompressionTypeError
 
         expect(func).not_to have_received(:call)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 module RegisterCommon
@@ -10,9 +12,8 @@ module RegisterCommon
 
       def process(data)
         parsed = JSON.parse(data)
-        if parsed['s3_path']
-          return s3_adapter.download_and_read(s3_bucket: s3_bucket, s3_path: parsed['s3_path'])
-        end
+        return s3_adapter.download_and_read(s3_bucket:, s3_path: parsed['s3_path']) if parsed['s3_path']
+
         data
       rescue JSON::ParserError
         data
