@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/decompressors/gzip_reader'
 
 RSpec.describe RegisterCommon::Decompressors::GzipReader do
@@ -7,7 +9,7 @@ RSpec.describe RegisterCommon::Decompressors::GzipReader do
     context 'when given a valid gzipped stream' do
       it 'unzips successfully' do
         result = File.open('./spec/fixtures/sample_file.gz') do |stream|
-          subject.open_stream(stream) { |unzipped| unzipped.read }
+          subject.open_stream(stream, &:read)
         end
 
         expect(result).to eq "HELLO WORLD\nTESTING GZIP\n\n"

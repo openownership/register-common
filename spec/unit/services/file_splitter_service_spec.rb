@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/services/file_splitter_service'
 require 'register_common/decompressors/gzip_reader'
 require 'stringio'
@@ -16,11 +18,11 @@ RSpec.describe RegisterCommon::Services::FileSplitterService do
       file_count = 0
       subject.split_stream(stream, split_size: 100) do |file_path|
         result = File.open(file_path) do |stream|
-          gzip_reader.open_stream(stream) { |unzipped| unzipped.read }
+          gzip_reader.open_stream(stream, &:read)
         end
 
-        starting_line = file_count * 100 + 1
-        expect(result).to eq (starting_line...(starting_line+100)).map { |i| "LINE#{i}" }.join("\n") + "\n"
+        starting_line = (file_count * 100) + 1
+        expect(result).to eq (starting_line...(starting_line + 100)).map { |i| "LINE#{i}" }.join("\n") + "\n"
 
         file_count += 1
       end

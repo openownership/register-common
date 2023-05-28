@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module RegisterCommon
   module Parsers
     class PlainReader
-      def foreach(stream, &block)
-        stream.each(&block)
+      def foreach(stream, &)
+        stream.each(&)
       end
     end
   end

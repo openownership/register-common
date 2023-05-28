@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/services/publisher'
 require 'json'
 require 'stringio'
@@ -5,13 +7,13 @@ require 'stringio'
 RSpec.describe RegisterCommon::Services::Publisher do
   subject do
     described_class.new(
-      stream_name: stream_name,
-      kinesis_adapter: kinesis_adapter,
-      buffer_size: buffer_size,
-      s3_adapter: s3_adapter,
-      s3_bucket: s3_bucket,
-      s3_prefix: s3_prefix,
-      serializer: serializer
+      stream_name:,
+      kinesis_adapter:,
+      buffer_size:,
+      s3_adapter:,
+      s3_bucket:,
+      s3_prefix:,
+      serializer:,
     )
   end
 
@@ -51,8 +53,8 @@ RSpec.describe RegisterCommon::Services::Publisher do
         allow(s3_adapter).to receive(:upload_from_file_obj_to_s3)
         allow(kinesis_adapter).to receive(:put_records)
         expect(s3_adapter).to receive(:exists?).with(
-          s3_bucket: s3_bucket,
-          s3_path: '/some/s3/prefix/2439106918277298582'
+          s3_bucket:,
+          s3_path: '/some/s3/prefix/2439106918277298582',
         ).and_return false
 
         subject.publish msg
@@ -61,8 +63,8 @@ RSpec.describe RegisterCommon::Services::Publisher do
         expect(kinesis_adapter).to have_received(:put_records).with(
           {
             records: ["{\"s3_path\":\"/some/s3/prefix/2439106918277298582\"}\n"],
-            stream_name:  stream_name
-          }
+            stream_name:,
+          },
         )
       end
     end
@@ -89,7 +91,7 @@ RSpec.describe RegisterCommon::Services::Publisher do
 
         expect(kinesis_adapter).to have_received(:put_records).with(
           records: ["msg\n"],
-          stream_name: stream_name
+          stream_name:,
         )
       end
     end

@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require 'register_common/parsers/parser'
 
 RSpec.describe RegisterCommon::Parsers::Parser do
   subject do
     described_class.new(
-      csv_reader: csv_reader,
-      json_reader: json_reader,
-      plain_reader: plain_reader
+      csv_reader:,
+      json_reader:,
+      plain_reader:,
     )
   end
 
@@ -26,7 +28,7 @@ RSpec.describe RegisterCommon::Parsers::Parser do
       it 'yields parsed CSV rows' do
         expect(csv_reader).to receive(:foreach).with(stream).and_yield row
 
-        subject.foreach(stream, file_format: file_format) { |s| func.call s }
+        subject.foreach(stream, file_format:) { |s| func.call s }
         expect(func).to have_received(:call).with(row)
       end
     end
@@ -37,7 +39,7 @@ RSpec.describe RegisterCommon::Parsers::Parser do
       it 'yields parsed JSON rows' do
         expect(json_reader).to receive(:foreach).with(stream).and_yield row
 
-        subject.foreach(stream, file_format: file_format) { |s| func.call s }
+        subject.foreach(stream, file_format:) { |s| func.call s }
         expect(func).to have_received(:call).with(row)
       end
     end
@@ -48,7 +50,7 @@ RSpec.describe RegisterCommon::Parsers::Parser do
       it 'yields each line unmodified' do
         expect(plain_reader).to receive(:foreach).with(stream).and_yield row
 
-        subject.foreach(stream, file_format: file_format) { |s| func.call s }
+        subject.foreach(stream, file_format:) { |s| func.call s }
         expect(func).to have_received(:call).with(row)
       end
     end
@@ -58,7 +60,7 @@ RSpec.describe RegisterCommon::Parsers::Parser do
 
       it 'raises UnknownFileFormatError' do
         expect do
-          subject.foreach(stream, file_format: file_format) { |s| func.call s }
+          subject.foreach(stream, file_format:) { |s| func.call s }
         end.to raise_error RegisterCommon::Parsers::UnknownFileFormatError
 
         expect(func).not_to have_received(:call)

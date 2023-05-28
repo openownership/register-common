@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module RegisterCommon
   module Adapters
     class ErrorAdapter
-      def error(message)
+      def error(_message)
         nil # TODO: Rollbar
       end
     end

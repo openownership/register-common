@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'uri'
 require 'faraday'
 require 'faraday_middleware'
@@ -14,23 +16,25 @@ module RegisterCommon
         response =
           if block_given?
             streamed = []
-            current_chunk = ""
+            current_chunk = ''
 
             Faraday.new.get(
               URI(url), params, headers
             ) do |req|
-              req.options.on_data = Proc.new do |chunk, overall_received_bytes|
+              req.options.on_data = proc do |chunk, _overall_received_bytes|
                 current_chunk += chunk
                 lines = current_chunk.split("\n")
                 if current_chunk[-1] == "\n"
                   lines[0...-1].each do |line|
                     next if line.empty?
+
                     yield line
                   end
-                  current_chunk = ""
+                  current_chunk = ''
                 elsif lines.length > 1
                   lines[0...-1].each do |line|
                     next if line.empty?
+
                     yield line
                   end
                   current_chunk = lines[-1]

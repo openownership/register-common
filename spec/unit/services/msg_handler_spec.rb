@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'register_common/services/msg_handler'
 require 'json'
 require 'stringio'
 
 RSpec.describe RegisterCommon::Services::MsgHandler do
-  subject { described_class.new(s3_adapter: s3_adapter, s3_bucket: s3_bucket) }
+  subject { described_class.new(s3_adapter:, s3_bucket:) }
 
   let(:s3_adapter) { double 's3_adapter' }
   let(:s3_bucket) { double 's3_bucket' }
@@ -24,8 +26,8 @@ RSpec.describe RegisterCommon::Services::MsgHandler do
 
       it 'returns raw data' do
         expect(s3_adapter).to receive(:download_and_read).with(
-          s3_bucket: s3_bucket,
-          s3_path: 'some_s3_path'
+          s3_bucket:,
+          s3_path: 'some_s3_path',
         ).and_return large_data
 
         result = subject.process(data)

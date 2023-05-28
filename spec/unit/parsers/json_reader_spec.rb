@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/parsers/json_reader'
 require 'stringio'
 
@@ -5,11 +7,11 @@ RSpec.describe RegisterCommon::Parsers::JsonReader do
   subject { described_class.new }
 
   let(:iostream) do
-    StringIO.new(<<~JSON
+    StringIO.new(<<~JSON,
       {"hello": "world"}
       {"more": "content"}
-      JSON
-    )
+    JSON
+                )
   end
 
   describe '#foreach' do
@@ -17,12 +19,12 @@ RSpec.describe RegisterCommon::Parsers::JsonReader do
       it 'parses with header correctly' do
         results = []
         subject.foreach(iostream) { |row| results << row }
-        expect(results).to eq [{"hello"=>"world"}, {"more"=>"content"}]
+        expect(results).to eq [{ 'hello' => 'world' }, { 'more' => 'content' }]
       end
     end
 
     context 'when JSON has errors' do
-      let(:iostream) { StringIO.new("{\"hello: \"world\"}") }
+      let(:iostream) { StringIO.new('{"hello: "world"}') }
 
       it 'raises an error' do
         expect do

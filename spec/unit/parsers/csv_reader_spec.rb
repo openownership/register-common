@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/parsers/csv_reader'
 require 'stringio'
 
@@ -10,7 +12,7 @@ RSpec.describe RegisterCommon::Parsers::CsvReader do
     it 'parses with header correctly' do
       results = []
       subject.foreach(iostream) { |row| results << row }
-      expect(results).to eq [{"example"=>"a", "file"=>"1"}, {"example"=>"b", "file"=>"7"}]
+      expect(results).to eq [{ 'example' => 'a', 'file' => '1' }, { 'example' => 'b', 'file' => '7' }]
     end
   end
 end
