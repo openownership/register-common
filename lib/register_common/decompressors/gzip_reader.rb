@@ -9,7 +9,7 @@ module RegisterCommon
         gz = Zlib::GzipReader.new(stream)
         yield gz
       ensure
-        gz&.close
+        gz.close
       end
     end
   end
