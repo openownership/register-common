@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  common:
+    build:
+      context: .
+      target: dev
+    env_file: .env
+    networks:
+      - common
+    restart: on-failure
+    volumes:
+      - ./bin:/home/x/r/bin
+      - ./Gemfile.lock:/home/x/r/Gemfile.lock
+      - ./Gemfile:/home/x/r/Gemfile
+      - ./lib:/home/x/r/lib
+      - ./register_common.gemspec:/home/x/r/register_common.gemspec
+      - ./spec:/home/x/r/spec
+networks:
+  common: {}
