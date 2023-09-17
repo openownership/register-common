@@ -6,10 +6,7 @@ module RegisterCommon
   module Adapters
     class RedisAdapter
       def initialize(host:, port:)
-        @redis = Redis.new(
-          host: ENV.fetch('REDIS_HOST', host),
-          port: ENV.fetch('REDIS_PORT', port),
-        )
+        @redis = Redis.new(host:, port:)
       end
 
       def sismember(key, element)
