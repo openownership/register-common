@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = 'Shared functionality required by other Register repositories.'
   spec.description = spec.summary
   spec.homepage = 'https://github.com/openownership/register-common'
-  spec.required_ruby_version = '>= 2.7'
+  spec.required_ruby_version = '>= 3.1'
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
   spec.metadata['source_code_uri'] = 'https://github.com/openownership/register-common'

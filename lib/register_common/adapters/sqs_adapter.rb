@@ -11,7 +11,7 @@ module RegisterCommon
         @client = Aws::SQS::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
-          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY,
+          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
         )
       end
 
@@ -19,8 +19,8 @@ module RegisterCommon
         client.delete_message(
           {
             queue_url:,
-            receipt_handle:,
-          },
+            receipt_handle:
+          }
         )
       end
 
@@ -33,8 +33,8 @@ module RegisterCommon
             message_attribute_names: ['MessageAttributeName'],
             max_number_of_messages: limit,
             visibility_timeout: 1000,
-            wait_time_seconds: 5,
-          },
+            wait_time_seconds: 5
+          }
         )
 
         return [] if collection.empty?
@@ -42,7 +42,7 @@ module RegisterCommon
         collection.map do |message|
           {
             receipt_handle: message.receipt_handle,
-            content: JSON.parse(message.body),
+            content: JSON.parse(message.body)
           }
         end
       end
@@ -57,8 +57,8 @@ module RegisterCommon
         client.send_message_batch(
           {
             queue_url:,
-            entries: msgs,
-          },
+            entries: msgs
+          }
         )
       end
 

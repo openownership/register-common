@@ -13,6 +13,7 @@ module RegisterCommon
         @writer = writer
       end
 
+      # rubocop:disable Metrics/CyclomaticComplexity
       def split_stream(stream, split_size: DEFAULT_LINES_PER_FILE, max_lines: nil)
         file_index = 0
 
@@ -60,6 +61,7 @@ module RegisterCommon
 
         file_index
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       private
 

@@ -7,7 +7,7 @@ RSpec.describe RegisterCommon::Parsers::JsonReader do
   subject { described_class.new }
 
   let(:iostream) do
-    StringIO.new(<<~JSON,
+    StringIO.new(<<~JSON
       {"hello": "world"}
       {"more": "content"}
     JSON
@@ -28,7 +28,8 @@ RSpec.describe RegisterCommon::Parsers::JsonReader do
 
       it 'raises an error' do
         expect do
-          subject.foreach(iostream) {}
+          results = []
+          subject.foreach(iostream) { |row| results << row }
         end.to raise_error JSON::ParserError
       end
     end

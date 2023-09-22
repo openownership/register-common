@@ -31,7 +31,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         allow(redis).to receive(:set)
 
         expect(client).to receive(:list_shards).with(
-          { stream_name: },
+          { stream_name: }
         ).and_return shards
 
         expect(client).to receive(:get_shard_iterator).with(
@@ -39,14 +39,14 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
             shard_id: 'shard1',
             shard_iterator_type: 'TRIM_HORIZON',
             starting_sequence_number: nil,
-            stream_name:,
-          },
+            stream_name:
+          }
         ).and_return double('shard_iterator', shard_iterator:)
 
         expect(client).to receive(:get_records).with(
-          { limit: 50, shard_iterator: 'iterator1' },
+          { limit: 50, shard_iterator: 'iterator1' }
         ).and_return(
-          double('resp', records:, next_shard_iterator:),
+          double('resp', records:, next_shard_iterator:)
         )
 
         records = []
@@ -71,7 +71,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         allow(redis).to receive(:set)
 
         expect(client).to receive(:list_shards).with(
-          { stream_name: },
+          { stream_name: }
         ).and_return shards
 
         expect(client).to receive(:get_shard_iterator).with(
@@ -79,14 +79,14 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
             shard_id: 'shard1',
             shard_iterator_type: 'AFTER_SEQUENCE_NUMBER',
             starting_sequence_number: 'stored-seq',
-            stream_name:,
-          },
+            stream_name:
+          }
         ).and_return double('shard_iterator', shard_iterator:)
 
         expect(client).to receive(:get_records).with(
-          { limit: 50, shard_iterator: 'iterator1' },
+          { limit: 50, shard_iterator: 'iterator1' }
         ).and_return(
-          double('resp', records:, next_shard_iterator:),
+          double('resp', records:, next_shard_iterator:)
         )
 
         records = []

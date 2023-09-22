@@ -10,18 +10,20 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
       'credentials',
       AWS_REGION: 'AWS_REGION',
       AWS_ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
-      AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
+      AWS_SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY'
     )
   end
   let(:athena_client) { double 'athena_client' }
 
+  # rubocop:disable RSpec/ExpectInHook
   before do
     expect(Aws::Athena::Client).to receive(:new).with(
       region: credentials.AWS_REGION,
       access_key_id: credentials.AWS_ACCESS_KEY_ID,
-      secret_access_key: credentials.AWS_SECRET_ACCESS_KEY,
+      secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
     ).and_return athena_client
   end
+  # rubocop:enable RSpec/ExpectInHook
 
   describe '#get_query_execution' do
     it 'calls athena client' do
@@ -29,7 +31,7 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
       expected_response = double 'expected_response'
 
       expect(athena_client).to receive(:get_query_execution).with(
-        { query_execution_id: execution_id },
+        { query_execution_id: execution_id }
       ).and_return expected_response
 
       response = subject.get_query_execution(execution_id)
@@ -43,7 +45,7 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
       expected_response = double 'expected_response'
 
       expect(athena_client).to receive(:start_query_execution).with(
-        params,
+        params
       ).and_return expected_response
 
       response = subject.start_query_execution(params)
@@ -68,11 +70,13 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
       end
     end
 
+    # rubocop:disable RSpec/ExpectInHook
     before do
       expect(athena_client).to receive(:get_query_execution).with(
-        { query_execution_id: execution_id },
+        { query_execution_id: execution_id }
       ).and_return(*responses)
     end
+    # rubocop:enable RSpec/ExpectInHook
 
     context 'when query has already completed' do
       it 'returns' do
