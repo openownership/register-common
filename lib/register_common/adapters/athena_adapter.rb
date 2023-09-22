@@ -11,15 +11,15 @@ module RegisterCommon
         @client = Aws::Athena::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
-          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY,
+          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
         )
       end
 
       def get_query_execution(execution_id)
         client.get_query_execution(
           {
-            query_execution_id: execution_id,
-          },
+            query_execution_id: execution_id
+          }
         )
       end
 
@@ -43,9 +43,9 @@ module RegisterCommon
           {
             query_string: sql_query,
             result_configuration: {
-              output_location:,
-            },
-          },
+              output_location:
+            }
+          }
         )
         wait_for_query(athena_query.query_execution_id)
       end

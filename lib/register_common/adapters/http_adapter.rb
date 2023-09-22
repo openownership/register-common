@@ -11,6 +11,7 @@ module RegisterCommon
       HttpError = Class.new(StandardError)
       HttpResponse = Struct.new(:status, :headers, :body, :success)
 
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def get(url, params: {}, headers: {}, raise_on_failure: false)
         streamed = nil
         response =
@@ -52,6 +53,7 @@ module RegisterCommon
 
         HttpResponse.new(response.status, response.headers, streamed ? streamed.join : response.body, response.success?)
       end
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     end
   end
 end

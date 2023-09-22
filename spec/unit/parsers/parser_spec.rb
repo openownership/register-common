@@ -7,7 +7,7 @@ RSpec.describe RegisterCommon::Parsers::Parser do
     described_class.new(
       csv_reader:,
       json_reader:,
-      plain_reader:,
+      plain_reader:
     )
   end
 

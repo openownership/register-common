@@ -5,7 +5,7 @@ require 'json'
 module RegisterCommon
   module Parsers
     class JsonReader
-      def foreach(stream, headers: true)
+      def foreach(stream)
         stream.each { |line| yield JSON.parse(line) }
       end
     end

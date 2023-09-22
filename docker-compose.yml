@@ -9,6 +9,7 @@ services:
       - common
     restart: on-failure
     volumes:
+      - ./.rubocop.yml:/home/x/r/.rubocop.yml
       - ./bin:/home/x/r/bin
       - ./Gemfile.lock:/home/x/r/Gemfile.lock
       - ./Gemfile:/home/x/r/Gemfile
