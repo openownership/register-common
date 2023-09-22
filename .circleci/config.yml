@@ -1,47 +1,17 @@
 version: 2.1
 jobs:
   build:
-    parallelism: 1
-    working_directory: ~/openownership/register-common
-
-    docker:
-
-      - image: cimg/ruby:3.1.2-browsers
-        environment:
-          BUNDLE_JOBS: 3
-          BUNDLE_RETRY: 3
-          BUNDLE_PATH: vendor/bundle
-
+    machine:
+      image: ubuntu-2204:2023.07.2
+      docker_layer_caching: true
     steps:
-
       - checkout
-
-      # Which version of bundler?
       - run:
-          name: Which bundler?
-          command: bundle -v
-
-      # Restore bundle cache
-      - restore_cache:
-          keys:
-            - app-bundle-v3-{{ checksum "Gemfile.lock" }}
-
+          name: Build dev
+          command: |
+            docker build --target dev -t dev .
       - run:
-          name: Bundle install
-          command: bundle check || bundle install
-
-      # Store bundle cache
-      - save_cache:
-          key: app-bundle-v3-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
-
-      # Unit tests
-      - run:
-          command: bundle exec rspec
-          environment:
-            TEST: 1
-
-      # Linting
-      - run:
-          command: bundle exec rubocop
+          name: Test
+          command: |
+            function run() { docker run --rm -t --env-file .env.circleci dev "$@"; }
+            run bin/test
