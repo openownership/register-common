@@ -27,7 +27,7 @@ RSpec.describe RegisterCommon::Services::MsgHandler do
       it 'returns raw data' do
         expect(s3_adapter).to receive(:download_and_read).with(
           s3_bucket:,
-          s3_path: 'some_s3_path',
+          s3_path: 'some_s3_path'
         ).and_return large_data
 
         result = subject.process(data)

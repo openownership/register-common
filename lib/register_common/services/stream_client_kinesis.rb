@@ -9,6 +9,7 @@ module RegisterCommon
     class StreamClientKinesis
       EXPIRY_SECS = 60 * 60 * 24 # 1 day
 
+      # rubocop:disable Metrics/ParameterLists
       def initialize(
         credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil,
         client: nil
@@ -18,11 +19,13 @@ module RegisterCommon
         @client = client || Aws::Kinesis::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
-          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY,
+          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
         )
         @stream_name = stream_name
       end
+      # rubocop:enable Metrics/ParameterLists
 
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def consume(consumer_id, limit: nil)
         shard_ids = list_shards
 
@@ -70,6 +73,7 @@ module RegisterCommon
           sleep 1
         end
       end
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       private
 
@@ -87,8 +91,8 @@ module RegisterCommon
             stream_name:,
             shard_id:,
             shard_iterator_type:,
-            starting_sequence_number: sequence_number,
-          },
+            starting_sequence_number: sequence_number
+          }
         ).shard_iterator
       end
 

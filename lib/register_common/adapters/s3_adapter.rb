@@ -14,7 +14,7 @@ module RegisterCommon
         @s3_client = Aws::S3::Client.new(
           region: credentials.AWS_REGION,
           access_key_id: credentials.AWS_ACCESS_KEY_ID,
-          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY,
+          secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
         )
       end
 
@@ -58,8 +58,8 @@ module RegisterCommon
         s3_client.list_objects(
           {
             bucket: s3_bucket,
-            prefix: s3_prefix,
-          },
+            prefix: s3_prefix
+          }
         ).contents.map(&:key)
       end
 
@@ -67,8 +67,8 @@ module RegisterCommon
         s3_client.create_multipart_upload(
           {
             bucket: s3_bucket,
-            key: s3_path,
-          },
+            key: s3_path
+          }
         ).upload_id
       end
 
@@ -79,8 +79,8 @@ module RegisterCommon
             copy_source: "/#{s3_bucket}/#{source_path}",
             key: dest_path,
             part_number:,
-            upload_id:,
-          },
+            upload_id:
+          }
         )
       end
 
@@ -91,9 +91,9 @@ module RegisterCommon
             key: s3_path,
             upload_id:,
             multipart_upload: {
-              parts:,
-            },
-          },
+              parts:
+            }
+          }
         )
       end
 

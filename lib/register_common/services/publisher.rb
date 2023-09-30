@@ -16,6 +16,7 @@ module RegisterCommon
       DEFAULT_BUFFER_SIZE = 20
       MAX_BUFFER_BYTES = 1_000_000
 
+      # rubocop:disable Metrics/ParameterLists
       def initialize(
         stream_name:,
         kinesis_adapter:,
@@ -34,7 +35,9 @@ module RegisterCommon
         @serializer = serializer
         @buffer = []
       end
+      # rubocop:enable Metrics/ParameterLists
 
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def publish(msg)
         unless msg.is_a? String
           msg = serializer ? serializer.serialize(msg) : msg.serialize
@@ -59,6 +62,7 @@ module RegisterCommon
 
         true
       end
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       def finalize
         flush_buffer
@@ -94,8 +98,8 @@ module RegisterCommon
           kinesis_adapter.put_records(
             stream_name:,
             records: [
-              "#{{ s3_path: }.to_json}\n",
-            ],
+              "#{{ s3_path: }.to_json}\n"
+            ]
           )
         end
       end
