@@ -1,19 +1,16 @@
 # frozen_string_literal: true
 
-require 'stringio'
 require 'json'
+require 'stringio'
 require 'xxhash'
 
-require 'register_common/utils/mixins/retry_with_backoff'
+require_relative '../utils/mixins/retry_with_backoff'
 
 module RegisterCommon
   module Services
     class Publisher
       include Utils::Mixins::RetryWithBackoff
 
-      MsgUnsendable = Class.new(StandardError)
-
-      DEFAULT_BUFFER_SIZE = 20
       MAX_BUFFER_BYTES = 1_000_000
 
       # rubocop:disable Metrics/ParameterLists

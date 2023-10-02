@@ -14,7 +14,6 @@ module RegisterCommon
             result = yield
             break
           rescue StandardError
-            # LOGGER.warn e.message
             raise unless retry_count < max_retries
 
             sleep retry_count

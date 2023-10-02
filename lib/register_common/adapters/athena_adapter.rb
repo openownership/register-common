@@ -5,7 +5,7 @@ require 'aws-sdk-athena'
 module RegisterCommon
   module Adapters
     class AthenaAdapter
-      QueryTimeout = Class.new(StandardError)
+      QueryTimeoutError = Class.new(StandardError)
 
       def initialize(credentials:)
         @client = Aws::Athena::Client.new(
@@ -35,7 +35,7 @@ module RegisterCommon
           sleep wait_interval
         end
 
-        raise QueryTimeout
+        raise QueryTimeoutError
       end
 
       def execute_and_wait(sql_query, output_location)

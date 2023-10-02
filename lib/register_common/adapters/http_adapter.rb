@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require 'uri'
 require 'faraday'
 require 'faraday_middleware'
-# Add persistent http option
+require 'uri'
 
 module RegisterCommon
   module Adapters

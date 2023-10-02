@@ -2,7 +2,8 @@
 
 require 'stringio'
 require 'tmpdir'
-require 'register_common/compressors/gzip_writer'
+
+require_relative '../compressors/gzip_writer'
 
 module RegisterCommon
   module Services
