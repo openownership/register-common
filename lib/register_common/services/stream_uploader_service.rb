@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'register_common/services/file_splitter_service'
+require_relative 'file_splitter_service'
 
 module RegisterCommon
   module Services
     class StreamUploaderService
       DEFAULT_LINES_PER_FILE = 2_500_000
-      MAX_PARTS = 98
+      MAX_PARTS              = 98
 
       def initialize(
         s3_adapter:,

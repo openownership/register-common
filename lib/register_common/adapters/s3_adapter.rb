@@ -6,9 +6,7 @@ require 'tmpdir'
 module RegisterCommon
   module Adapters
     class S3Adapter
-      module Errors
-        NoSuchKey = Class.new(StandardError)
-      end
+      NoSuchKeyError = Class.new(StandardError)
 
       def initialize(credentials:)
         @s3_client = Aws::S3::Client.new(
@@ -22,7 +20,7 @@ module RegisterCommon
         s3 = Aws::S3::Object.new(s3_bucket, s3_path, client: s3_client)
         s3.download_file(local_path)
       rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
-        raise Errors::NoSuchKey
+        raise NoSuchKeyError
       end
 
       def download_and_read(s3_bucket:, s3_path:)
@@ -38,7 +36,7 @@ module RegisterCommon
           local_path = File.join(dir, 'tmpfile')
           download_from_s3(s3_bucket:, s3_path:, local_path:)
           true
-        rescue Errors::NoSuchKey
+        rescue NoSuchKeyError
           false
         end
       end
@@ -51,7 +49,7 @@ module RegisterCommon
       def upload_from_file_obj_to_s3(s3_bucket:, s3_path:, stream:)
         s3_client.put_object(bucket: s3_bucket, key: s3_path, body: stream)
       rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
-        raise Errors::NoSuchKey
+        raise NoSuchKeyError
       end
 
       def list_objects(s3_bucket:, s3_prefix:)
@@ -100,7 +98,7 @@ module RegisterCommon
       def download_from_s3_to_memory(s3_bucket:, s3_path:)
         s3_client.get_object(bucket: s3_bucket, key: s3_path).body
       rescue Aws::S3::Errors::NoSuchKey, Aws::S3::Errors::NotFound
-        raise Errors::NoSuchKey
+        raise NoSuchKeyError
       end
 
       private

@@ -2,6 +2,7 @@
 
 require 'aws-sdk-kinesis'
 require 'redis'
+
 require_relative 'msg_handler'
 
 module RegisterCommon

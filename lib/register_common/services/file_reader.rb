@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 require 'tmpdir'
-require 'register_common/decompressors/decompressor'
-require 'register_common/parsers/parser'
+
+require_relative '../decompressors/decompressor'
+require_relative '../parsers/parser'
 
 module RegisterCommon
   module Services
     class FileReader
-      BATCH_SIZE = 100
-      DEFAULT_FORMAT = Parsers::FileFormats::PLAIN
+      BATCH_SIZE          = 100
       DEFAULT_COMPRESSION = Decompressors::CompressionTypes::NONE
+      DEFAULT_FORMAT      = Parsers::FileFormats::PLAIN
 
       def initialize(
         s3_adapter:,

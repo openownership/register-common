@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require 'register_common/parsers/file_formats'
-
-require 'register_common/parsers/csv_reader'
-require 'register_common/parsers/json_reader'
-require 'register_common/parsers/plain_reader'
+require_relative 'csv_reader'
+require_relative 'file_formats'
+require_relative 'json_reader'
+require_relative 'plain_reader'
 
 module RegisterCommon
   module Parsers

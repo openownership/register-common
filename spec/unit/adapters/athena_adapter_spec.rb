@@ -88,7 +88,7 @@ RSpec.describe RegisterCommon::Adapters::AthenaAdapter do
       let(:states) { ['FAILED'] }
 
       it 'returns' do
-        expect { response }.to raise_error described_class::QueryTimeout
+        expect { response }.to raise_error described_class::QueryTimeoutError
       end
     end
 

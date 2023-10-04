@@ -2,12 +2,12 @@
 
 module RegisterCommon
   module Parsers
+    UnknownFileFormatError = Class.new(StandardError)
+
     module FileFormats
       PLAIN = 'plain'
-      CSV = 'csv'
-      JSON = 'json'
+      CSV   = 'csv'
+      JSON  = 'json'
     end
-
-    UnknownFileFormatError = Class.new(StandardError)
   end
 end

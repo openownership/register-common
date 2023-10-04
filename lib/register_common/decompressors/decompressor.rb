@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'register_common/decompressors/compression_types'
-require 'register_common/decompressors/gzip_reader'
-require 'register_common/decompressors/zip_reader'
+require_relative 'compression_types'
+require_relative 'gzip_reader'
+require_relative 'zip_reader'
 
 module RegisterCommon
   module Decompressors

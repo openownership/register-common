@@ -2,12 +2,12 @@
 
 module RegisterCommon
   module Decompressors
+    UnknownCompressionTypeError = Class.new(StandardError)
+
     module CompressionTypes
       NONE = 'none'
       GZIP = 'gzip'
-      ZIP = 'zip'
+      ZIP  = 'zip'
     end
-
-    UnknownCompressionTypeError = Class.new(StandardError)
   end
 end
