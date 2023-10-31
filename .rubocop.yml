@@ -11,6 +11,8 @@ Metrics/MethodLength:
   Enabled: false
 Style/Documentation:
   Enabled: false
+RSpec/FilePath:
+  Enabled: false
 #-------------------------------------------------------------------------------
 RSpec/ExampleLength:
   Exclude:
@@ -21,23 +23,7 @@ RSpec/ExampleLength:
     - spec/unit/services/publisher_spec.rb
     - spec/unit/services/stream_client_kinesis_spec.rb
     - spec/unit/services/stream_uploader_service_spec.rb
-RSpec/FilePath:
-  Exclude:
-    - spec/unit/adapters/athena_adapter_spec.rb
-    - spec/unit/compressors/gzip_writer_spec.rb
-    - spec/unit/decompressors/decompressor_spec.rb
-    - spec/unit/decompressors/gzip_reader_spec.rb
-    - spec/unit/decompressors/zip_reader_spec.rb
-    - spec/unit/parsers/csv_reader_spec.rb
-    - spec/unit/parsers/json_reader_spec.rb
-    - spec/unit/parsers/parser_spec.rb
-    - spec/unit/parsers/plain_reader_spec.rb
-    - spec/unit/register_common.rb
-    - spec/unit/services/file_splitter_service_spec.rb
-    - spec/unit/services/msg_handler_spec.rb
-    - spec/unit/services/publisher_spec.rb
-    - spec/unit/services/stream_client_kinesis_spec.rb
-    - spec/unit/services/stream_uploader_service_spec.rb
+    - spec/unit/services/bulk_transformer_spec.rb
 RSpec/MessageSpies:
   Exclude:
     - spec/unit/adapters/athena_adapter_spec.rb
