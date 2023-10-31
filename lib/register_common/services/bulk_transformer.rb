@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'register_common/services/file_reader'
 
 require_relative 'msg_handler'
@@ -7,7 +9,7 @@ module RegisterCommon
     class BulkTransformer
       BATCH_SIZE = 25
       DEFAULT_PARALLEL_FILES = 1
-      NAMESPACE = 'BULK_TRANSFORMER'.freeze
+      NAMESPACE = 'BULK_TRANSFORMER'
 
       def initialize(s3_adapter:, s3_bucket:, set_client:, file_reader: nil, batch_size: nil)
         @s3_adapter = s3_adapter
@@ -15,7 +17,7 @@ module RegisterCommon
         @set_client = set_client
         @file_reader = file_reader || RegisterCommon::Services::FileReader.new(
           s3_adapter:,
-          batch_size: (batch_size || BATCH_SIZE),
+          batch_size: (batch_size || BATCH_SIZE)
         )
         @msg_handler = MsgHandler.new(s3_adapter:, s3_bucket:)
       end

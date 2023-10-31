@@ -11,7 +11,7 @@ RSpec.describe RegisterCommon::Services::BulkTransformer do
       s3_bucket:,
       set_client:,
       file_reader: nil,
-      batch_size: nil,
+      batch_size: nil
     )
   end
 
@@ -24,7 +24,7 @@ RSpec.describe RegisterCommon::Services::BulkTransformer do
     let(:raw_rows) do
       [
         '{ "a": "x" }',
-        '{ "s3_path": "example_path" }',
+        '{ "s3_path": "example_path" }'
       ]
     end
 
@@ -36,7 +36,8 @@ RSpec.describe RegisterCommon::Services::BulkTransformer do
 
       processed_files = instance_double RegisterCommon::Services::SetClientRedis::MySet
 
-      allow(RegisterCommon::Services::FileReader).to receive(:new).with(s3_adapter:, batch_size: 25).and_return file_reader
+      allow(RegisterCommon::Services::FileReader).to receive(:new).with(s3_adapter:,
+                                                                        batch_size: 25).and_return file_reader
       allow(file_reader).to receive(:read_from_s3).with(s3_bucket:, s3_path:).and_yield(raw_rows)
       allow(set_client).to receive(:init_set).with(set_key).and_return processed_files
       allow(s3_adapter).to receive(:list_objects).with(s3_bucket:, s3_prefix:).and_return [s3_path]
@@ -51,7 +52,7 @@ RSpec.describe RegisterCommon::Services::BulkTransformer do
       end
 
       expect(row_batches).to eq [
-        ['{ "a": "x" }', large_data],
+        ['{ "a": "x" }', large_data]
       ]
     end
   end
