@@ -11,7 +11,8 @@ module RegisterCommon
       DEFAULT_PARALLEL_FILES = 1
       NAMESPACE = 'BULK_TRANSFORMER'
 
-      def initialize(s3_adapter:, s3_bucket:, set_client:, file_reader: nil, batch_size: nil)
+      # rubocop:disable Metrics/ParameterLists
+      def initialize(s3_adapter:, s3_bucket:, set_client:, file_reader: nil, batch_size: nil, namespace: nil)
         @s3_adapter = s3_adapter
         @s3_bucket = s3_bucket
         @set_client = set_client
@@ -20,10 +21,12 @@ module RegisterCommon
           batch_size: (batch_size || BATCH_SIZE)
         )
         @msg_handler = MsgHandler.new(s3_adapter:, s3_bucket:)
+        @namespace = namespace || NAMESPACE
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def call(s3_prefix, parallel_files: nil, &block)
-        processed_files = set_client.init_set("#{NAMESPACE}:#{s3_prefix}")
+        processed_files = set_client.init_set("#{@namespace}:#{s3_prefix}")
 
         s3_paths = s3_adapter.list_objects(s3_bucket:, s3_prefix:)
 
