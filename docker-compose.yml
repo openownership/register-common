@@ -7,7 +7,6 @@ services:
     env_file: .env
     networks:
       - common
-    restart: on-failure
     volumes:
       - ./.rubocop.yml:/home/x/r/.rubocop.yml
       - ./bin:/home/x/r/bin
