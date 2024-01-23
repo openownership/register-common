@@ -1,4 +1,5 @@
-version: "3.8"
+networks:
+  common: {}
 services:
   common:
     build:
@@ -9,11 +10,10 @@ services:
       - common
     volumes:
       - ./.rubocop.yml:/home/x/r/.rubocop.yml
-      - ./bin:/home/x/r/bin
       - ./Gemfile.lock:/home/x/r/Gemfile.lock
       - ./Gemfile:/home/x/r/Gemfile
+      - ./bin:/home/x/r/bin
       - ./lib:/home/x/r/lib
       - ./register_common.gemspec:/home/x/r/register_common.gemspec
       - ./spec:/home/x/r/spec
-networks:
-  common: {}
+version: "3.8"
