@@ -7,11 +7,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build dev
-          command: |
-            docker build --target dev -t dev .
-      - run:
           name: Test
           command: |
-            function run() { docker run --rm -t --env-file .env.circleci dev "$@"; }
-            run bin/test
+            cp .env.example .env
+            docker compose run common test
