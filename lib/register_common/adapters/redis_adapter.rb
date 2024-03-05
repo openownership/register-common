@@ -5,8 +5,8 @@ require 'redis'
 module RegisterCommon
   module Adapters
     class RedisAdapter
-      def initialize(host:, port:)
-        @redis = Redis.new(host:, port:)
+      def initialize(url:)
+        @redis = Redis.new(url:)
       end
 
       def sismember(key, element)

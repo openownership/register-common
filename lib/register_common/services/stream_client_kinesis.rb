@@ -15,7 +15,7 @@ module RegisterCommon
         credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil,
         client: nil
       )
-        @redis = redis || Redis.new(host: ENV.fetch('REDIS_HOST', nil), port: ENV.fetch('REDIS_PORT', nil))
+        @redis = redis || Redis.new(url: ENV.fetch('REDIS_URL'))
         @msg_handler = msg_handler || MsgHandler.new(s3_adapter:, s3_bucket:)
         @client = client || Aws::Kinesis::Client.new(
           region: credentials.AWS_REGION,
