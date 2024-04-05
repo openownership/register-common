@@ -11,6 +11,7 @@ module RegisterCommon
         response['hits']['hits'].each(&)
         while response['hits']['hits'].size.positive?
           response = client.scroll(body: { scroll_id: }, scroll: SCROLL_TIME)
+          scroll_id = response['_scroll_id']
           response['hits']['hits'].each(&)
         end
       end
