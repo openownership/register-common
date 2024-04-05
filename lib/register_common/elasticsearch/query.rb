@@ -3,7 +3,7 @@
 module RegisterCommon
   module Elasticsearch
     module Query
-      SCROLL_TIME = '10m'
+      SCROLL_TIME = '1h'
 
       def self.search_scroll(client, query, &)
         response = client.search(**query, scroll: SCROLL_TIME)
