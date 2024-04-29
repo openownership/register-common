@@ -9,6 +9,13 @@ require_relative 'msg_handler'
 
 module RegisterCommon
   module Services
+    # rubocop:disable Layout/LineLength
+    KINESIS_ERR_SEQ_ACCOUNT = /StartingSequenceNumber \d+ used in GetShardIterator on shard shardId-\d+ in stream [\w-]+ under account \d+ is invalid./
+    KINESIS_ERR_SEQ_SHARD   = /Invalid StartingSequenceNumber. It encodes shardId-\d+, while it was used in a call to a shard with shardId-\d+/
+    # rubocop:enable Layout/LineLength
+
+    class SequenceError < StandardError; end
+
     class StreamClientKinesis
       # rubocop:disable Metrics/ParameterLists
       def initialize(
@@ -39,6 +46,10 @@ module RegisterCommon
 
         iterators = sequence_numbers.to_h do |shard_id, seq_number|
           [shard_id, get_shard_iterator(shard_id, sequence_number: seq_number)]
+        rescue SequenceError
+          @logger.fatal 'INVALID SEQUENCE NUMBER'
+          store_sequence_number(consumer_id, shard_id, nil)
+          raise
         end
 
         record_count = 0
@@ -105,6 +116,13 @@ module RegisterCommon
             starting_sequence_number: sequence_number
           }
         ).shard_iterator
+      rescue Aws::Kinesis::Errors::InvalidArgumentException => e
+        case e.message
+        when KINESIS_ERR_SEQ_ACCOUNT, KINESIS_ERR_SEQ_SHARD
+          raise SequenceError, e
+        else
+          raise e
+        end
       end
 
       def get_records(shard_iterator)
