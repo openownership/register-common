@@ -54,7 +54,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(records).to eq ['data1']
         expect(redis).to have_received(:set).with(
-          'kinesis_consumer_id_shard1', 'seq1', ex: 60 * 60 * 24
+          'kinesis_consumer_id_shard1', 'seq1'
         )
       end
     end
@@ -94,7 +94,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(records).to eq ['data1']
         expect(redis).to have_received(:set).with(
-          'kinesis_consumer_id_shard1', 'seq1', ex: 60 * 60 * 24
+          'kinesis_consumer_id_shard1', 'seq1'
         )
       end
     end

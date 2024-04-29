@@ -10,8 +10,6 @@ require_relative 'msg_handler'
 module RegisterCommon
   module Services
     class StreamClientKinesis
-      EXPIRY_SECS = 60 * 60 * 24 # 1 day
-
       # rubocop:disable Metrics/ParameterLists
       def initialize(
         credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil,
@@ -121,7 +119,7 @@ module RegisterCommon
       def store_sequence_number(consumer_id, shard_id, sequence_number)
         key = redis_key(consumer_id, shard_id)
         if sequence_number
-          redis.set(key, sequence_number, ex: EXPIRY_SECS)
+          redis.set(key, sequence_number)
         else
           redis.del(key)
         end
