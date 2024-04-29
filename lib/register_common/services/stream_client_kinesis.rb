@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'aws-sdk-kinesis'
+require 'json'
+require 'logger'
 require 'redis'
 
 require_relative 'msg_handler'
@@ -13,7 +15,7 @@ module RegisterCommon
       # rubocop:disable Metrics/ParameterLists
       def initialize(
         credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil,
-        client: nil
+        client: nil, logger: nil
       )
         @redis = redis || Redis.new(url: ENV.fetch('REDIS_URL'))
         @msg_handler = msg_handler || MsgHandler.new(s3_adapter:, s3_bucket:)
@@ -23,6 +25,7 @@ module RegisterCommon
           secret_access_key: credentials.AWS_SECRET_ACCESS_KEY
         )
         @stream_name = stream_name
+        @logger = logger || Logger.new(nil)
       end
       # rubocop:enable Metrics/ParameterLists
 
@@ -32,6 +35,7 @@ module RegisterCommon
 
         sequence_numbers = shard_ids.to_h do |shard_id|
           sequence_number = get_sequence_number(consumer_id, shard_id)
+          @logger.debug "[#{shard_id}] SEQ: #{sequence_number}"
           [shard_id, sequence_number]
         end
 
@@ -46,12 +50,20 @@ module RegisterCommon
           shard_ids.each do |shard_id|
             iterator = iterators[shard_id]
             resp = client.get_records({ shard_iterator: iterator, limit: 50 })
+            lag = resp.millis_behind_latest / 1000
+            @logger.debug "[#{shard_id}] LAG: #{lag}s | N: #{resp.records.count}"
             iterators[shard_id] = resp.next_shard_iterator
 
             next if resp.records.empty?
 
             last_record = nil
             resp.records.each do |record|
+              tag = begin
+                JSON.parse(record.data, symbolize_names: true)[:data][:links][:self]
+              rescue JSON::ParserError
+                nil
+              end
+              @logger.info "[#{shard_id}] [#{record.sequence_number}] #{tag}"
               yield msg_handler.process(record.data)
 
               record_count += 1
