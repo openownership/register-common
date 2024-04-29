@@ -46,7 +46,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         expect(client).to receive(:get_records).with(
           { limit: 50, shard_iterator: 'iterator1' }
         ).and_return(
-          double('resp', records:, next_shard_iterator:)
+          double('resp', records:, next_shard_iterator:, millis_behind_latest: 0)
         )
 
         records = []
@@ -54,7 +54,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(records).to eq ['data1']
         expect(redis).to have_received(:set).with(
-          'kinesis_consumer_id_shard1', 'seq1', ex: 60 * 60 * 24
+          'kinesis_consumer_id_shard1', 'seq1'
         )
       end
     end
@@ -86,7 +86,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         expect(client).to receive(:get_records).with(
           { limit: 50, shard_iterator: 'iterator1' }
         ).and_return(
-          double('resp', records:, next_shard_iterator:)
+          double('resp', records:, next_shard_iterator:, millis_behind_latest: 0)
         )
 
         records = []
@@ -94,7 +94,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(records).to eq ['data1']
         expect(redis).to have_received(:set).with(
-          'kinesis_consumer_id_shard1', 'seq1', ex: 60 * 60 * 24
+          'kinesis_consumer_id_shard1', 'seq1'
         )
       end
     end
