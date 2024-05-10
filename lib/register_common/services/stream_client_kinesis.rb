@@ -67,12 +67,9 @@ module RegisterCommon
 
             last_record = nil
             resp.records.each do |record|
-              tag = begin
-                JSON.parse(record.data, symbolize_names: true)[:data][:links][:self]
-              rescue JSON::ParserError
-                nil
-              end
-              @logger.info "[#{shard_id}] [#{record.sequence_number}] #{tag}"
+              record_h = JSON.parse(record.data, symbolize_names: true)
+              @logger.info "[#{shard_id}] [#{record.sequence_number}] #{record_h[:data][:links][:self]}"
+
               yield msg_handler.process(record.data)
 
               record_count += 1
@@ -85,7 +82,7 @@ module RegisterCommon
             end
 
             iterators[shard_id] = resp.next_shard_iterator
-            store_sequence_number(consumer_id, shard_id, last_record.sequence_number)
+            store_sequence_number(consumer_id, shard_id, last_record.sequence_number) if last_record
 
             break if complete
           end
@@ -144,7 +141,7 @@ module RegisterCommon
       end
 
       def redis_key(consumer_id, shard_id)
-        "kinesis_#{consumer_id}_#{shard_id}"
+        ['kinesis', consumer_id, shard_id].join('_')
       end
     end
   end

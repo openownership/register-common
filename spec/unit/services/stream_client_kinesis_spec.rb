@@ -25,10 +25,14 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         shard_iterator = 'iterator1'
         next_shard_iterator = 'next-iterator1'
         shards = double 'shards', shards: shard_ids.map { |shard_id| double('shard_id', shard_id:) }
-        records = [double('record', data: 'data1', sequence_number: 'seq1')]
+        record_h = { data: { links: { self: 'data1' } } }
+        records = [double('record', data: record_h.to_json, sequence_number: 'seq1')]
 
         expect(redis).to receive(:get).with('kinesis_consumer_id_shard1').and_return nil
         allow(redis).to receive(:set)
+        allow(redis).to receive(:smembers).and_return Set.new
+        allow(redis).to receive(:sadd)
+        allow(redis).to receive(:expire)
 
         expect(client).to receive(:list_shards).with(
           { stream_name: }
@@ -52,7 +56,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         records = []
         subject.consume(consumer_id, limit: 1) { |record| records << record }
 
-        expect(records).to eq ['data1']
+        expect(records).to eq [record_h.to_json]
         expect(redis).to have_received(:set).with(
           'kinesis_consumer_id_shard1', 'seq1'
         )
@@ -65,10 +69,14 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         shard_iterator = 'iterator1'
         next_shard_iterator = 'next-iterator1'
         shards = double 'shards', shards: shard_ids.map { |shard_id| double('shard_id', shard_id:) }
-        records = [double('record', data: 'data1', sequence_number: 'seq1')]
+        record_h = { data: { links: { self: 'data1' } } }
+        records = [double('record', data: record_h.to_json, sequence_number: 'seq1')]
 
         expect(redis).to receive(:get).with('kinesis_consumer_id_shard1').and_return 'stored-seq'
         allow(redis).to receive(:set)
+        allow(redis).to receive(:smembers).and_return Set.new
+        allow(redis).to receive(:sadd)
+        allow(redis).to receive(:expire)
 
         expect(client).to receive(:list_shards).with(
           { stream_name: }
@@ -92,7 +100,7 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
         records = []
         subject.consume(consumer_id, limit: 1) { |record| records << record }
 
-        expect(records).to eq ['data1']
+        expect(records).to eq [record_h.to_json]
         expect(redis).to have_received(:set).with(
           'kinesis_consumer_id_shard1', 'seq1'
         )
