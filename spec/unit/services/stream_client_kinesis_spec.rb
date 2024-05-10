@@ -30,6 +30,9 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(redis).to receive(:get).with('kinesis_consumer_id_shard1').and_return nil
         allow(redis).to receive(:set)
+        allow(redis).to receive(:smembers).and_return Set.new
+        allow(redis).to receive(:sadd)
+        allow(redis).to receive(:expire)
 
         expect(client).to receive(:list_shards).with(
           { stream_name: }
@@ -71,6 +74,9 @@ RSpec.describe RegisterCommon::Services::StreamClientKinesis do
 
         expect(redis).to receive(:get).with('kinesis_consumer_id_shard1').and_return 'stored-seq'
         allow(redis).to receive(:set)
+        allow(redis).to receive(:smembers).and_return Set.new
+        allow(redis).to receive(:sadd)
+        allow(redis).to receive(:expire)
 
         expect(client).to receive(:list_shards).with(
           { stream_name: }

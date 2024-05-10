@@ -17,6 +17,8 @@ module RegisterCommon
     class SequenceError < StandardError; end
 
     class StreamClientKinesis
+      RECORD_TRANSFORMED_TTL = 172_800 # 48h
+
       # rubocop:disable Metrics/ParameterLists
       def initialize(
         credentials:, stream_name:, msg_handler: nil, s3_adapter: nil, s3_bucket: nil, redis: nil,
@@ -69,8 +71,14 @@ module RegisterCommon
             resp.records.each do |record|
               record_h = JSON.parse(record.data, symbolize_names: true)
               @logger.info "[#{shard_id}] [#{record.sequence_number}] #{record_h[:data][:links][:self]}"
+              if record_transformed?(consumer_id, record_h[:data][:etag])
+                @logger.debug "[#{shard_id}] SKIP: #{record_h[:data][:etag]}"
+                next
+              end
+
               yield msg_handler.process(record.data)
 
+              record_transformed(consumer_id, record_h[:data][:etag])
               record_count += 1
               last_record = record
 
@@ -81,7 +89,7 @@ module RegisterCommon
             end
 
             iterators[shard_id] = resp.next_shard_iterator
-            store_sequence_number(consumer_id, shard_id, last_record.sequence_number)
+            store_sequence_number(consumer_id, shard_id, last_record.sequence_number) if last_record
 
             break if complete
           end
@@ -126,12 +134,12 @@ module RegisterCommon
       end
 
       def get_sequence_number(consumer_id, shard_id)
-        key = redis_key(consumer_id, shard_id)
+        key = redis_key_seq(consumer_id, shard_id)
         redis.get key
       end
 
       def store_sequence_number(consumer_id, shard_id, sequence_number)
-        key = redis_key(consumer_id, shard_id)
+        key = redis_key_seq(consumer_id, shard_id)
         if sequence_number
           redis.set(key, sequence_number)
         else
@@ -139,8 +147,30 @@ module RegisterCommon
         end
       end
 
-      def redis_key(consumer_id, shard_id)
-        "kinesis_#{consumer_id}_#{shard_id}"
+      def redis_key_seq(consumer_id, shard_id)
+        ['kinesis', consumer_id, shard_id].join('_')
+      end
+
+      def redis_key_transformed(consumer_id)
+        ['kinesis', consumer_id, 'transformed'].join('_')
+      end
+
+      def record_transformed?(consumer_id, etag)
+        k0 = redis_key_transformed(consumer_id)
+        redis.smembers(k0).each do |k1|
+          redis.srem(k0, k1) unless redis.exists?(k1)
+          return true if redis.sismember(k1, etag)
+        end
+        false
+      end
+
+      def record_transformed(consumer_id, etag)
+        k0 = redis_key_transformed(consumer_id)
+        t = Time.now.utc.to_i / RECORD_TRANSFORMED_TTL
+        k1 = [k0, t].join('_')
+        redis.sadd(k0, k1)
+        redis.sadd(k1, etag)
+        redis.expire(k1, RECORD_TRANSFORMED_TTL * 2, nx: true)
       end
     end
   end
