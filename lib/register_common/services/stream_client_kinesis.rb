@@ -67,12 +67,8 @@ module RegisterCommon
 
             last_record = nil
             resp.records.each do |record|
-              tag = begin
-                JSON.parse(record.data, symbolize_names: true)[:data][:links][:self]
-              rescue JSON::ParserError
-                nil
-              end
-              @logger.info "[#{shard_id}] [#{record.sequence_number}] #{tag}"
+              record_h = JSON.parse(record.data, symbolize_names: true)
+              @logger.info "[#{shard_id}] [#{record.sequence_number}] #{record_h[:data][:links][:self]}"
               yield msg_handler.process(record.data)
 
               record_count += 1
