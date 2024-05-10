@@ -5,6 +5,7 @@ require 'json'
 require 'logger'
 require 'redis'
 
+require_relative '../utils/expiring_set'
 require_relative 'msg_handler'
 
 module RegisterCommon
@@ -17,7 +18,8 @@ module RegisterCommon
     class SequenceError < StandardError; end
 
     class StreamClientKinesis
-      RECORD_TRANSFORMED_TTL = 172_800 # 48h
+      REDIS_TRANSFORMED_KEY = 'transformed'
+      REDIS_TRANSFORMED_TTL = 172_800 # 48h
 
       # rubocop:disable Metrics/ParameterLists
       def initialize(
@@ -38,6 +40,10 @@ module RegisterCommon
 
       # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def consume(consumer_id, limit: nil)
+        exp_set = Utils::ExpiringSet.new(
+          redis: @redis, namespace: consumer_id, ttl: REDIS_TRANSFORMED_TTL
+        )
+
         shard_ids = list_shards
 
         sequence_numbers = shard_ids.to_h do |shard_id|
@@ -71,14 +77,14 @@ module RegisterCommon
             resp.records.each do |record|
               record_h = JSON.parse(record.data, symbolize_names: true)
               @logger.info "[#{shard_id}] [#{record.sequence_number}] #{record_h[:data][:links][:self]}"
-              if record_transformed?(consumer_id, record_h[:data][:etag])
+              if exp_set.sismember(REDIS_TRANSFORMED_KEY, record_h[:data][:etag])
                 @logger.debug "[#{shard_id}] SKIP: #{record_h[:data][:etag]}"
                 next
               end
 
               yield msg_handler.process(record.data)
 
-              record_transformed(consumer_id, record_h[:data][:etag])
+              exp_set.sadd(REDIS_TRANSFORMED_KEY, record_h[:data][:etag])
               record_count += 1
               last_record = record
 
@@ -149,28 +155,6 @@ module RegisterCommon
 
       def redis_key_seq(consumer_id, shard_id)
         ['kinesis', consumer_id, shard_id].join('_')
-      end
-
-      def redis_key_transformed(consumer_id)
-        ['kinesis', consumer_id, 'transformed'].join('_')
-      end
-
-      def record_transformed?(consumer_id, etag)
-        k0 = redis_key_transformed(consumer_id)
-        redis.smembers(k0).each do |k1|
-          redis.srem(k0, k1) unless redis.exists?(k1)
-          return true if redis.sismember(k1, etag)
-        end
-        false
-      end
-
-      def record_transformed(consumer_id, etag)
-        k0 = redis_key_transformed(consumer_id)
-        t = Time.now.utc.to_i / RECORD_TRANSFORMED_TTL
-        k1 = [k0, t].join('_')
-        redis.sadd(k0, k1)
-        redis.sadd(k1, etag)
-        redis.expire(k1, RECORD_TRANSFORMED_TTL * 2, nx: true)
       end
     end
   end
