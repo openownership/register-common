@@ -53,12 +53,8 @@ module RegisterCommon
       end
 
       def list_objects(s3_bucket:, s3_prefix:)
-        s3_client.list_objects(
-          {
-            bucket: s3_bucket,
-            prefix: s3_prefix
-          }
-        ).contents.map(&:key)
+        s3_client.list_objects({ bucket: s3_bucket, prefix: s3_prefix })
+                 .flat_map { |res| res.contents.map(&:key) }
       end
 
       def create_multipart_upload(s3_bucket:, s3_path:)
