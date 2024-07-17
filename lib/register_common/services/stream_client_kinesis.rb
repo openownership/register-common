@@ -40,7 +40,7 @@ module RegisterCommon
 
         sequence_numbers = shard_ids.to_h do |shard_id|
           sequence_number = get_sequence_number(consumer_id, shard_id)
-          @logger.debug "[#{shard_id}] SEQ: #{sequence_number}"
+          @logger.info "[#{shard_id}] SEQ: #{sequence_number}"
           [shard_id, sequence_number]
         end
 
@@ -60,7 +60,7 @@ module RegisterCommon
             iterator = iterators[shard_id]
             resp = client.get_records({ shard_iterator: iterator, limit: 50 })
             lag = resp.millis_behind_latest / 1000
-            @logger.debug "[#{shard_id}] LAG: #{lag}s | N: #{resp.records.count}"
+            @logger.info "[#{shard_id}] LAG: #{lag}s | N: #{resp.records.count}"
             iterators[shard_id] = resp.next_shard_iterator
 
             next if resp.records.empty?
@@ -68,7 +68,7 @@ module RegisterCommon
             last_record = nil
             resp.records.each do |record|
               record_h = JSON.parse(record.data, symbolize_names: true)
-              @logger.info "[#{shard_id}] [#{record.sequence_number}] #{record_h[:data][:links][:self]}"
+              @logger.debug "[#{shard_id}] [#{record.sequence_number}] #{record_h[:data][:links][:self]}"
 
               yield msg_handler.process(record.data)
 
