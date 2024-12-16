@@ -27,7 +27,7 @@ module RegisterCommon
         client.start_query_execution(params)
       end
 
-      def wait_for_query(execution_id, max_time: 100, wait_interval: 5)
+      def wait_for_query(execution_id, max_time: 1000, wait_interval: 5)
         max_time.times do
           query = get_query_execution(execution_id)
           return query if query.query_execution.status.state == 'SUCCEEDED'
